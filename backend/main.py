@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-from config.db import engine, Base  # SessionLocal#engine-joining db connect
-
+from config.db import engine, Base
 # routes
 from routes.user_routes import router as user_router
 from routes.admin_routes import router as admin_router
@@ -14,8 +13,8 @@ Base.metadata.create_all(bind=engine)
 app.include_router(user_router, tags=["Auth"])
 app.include_router(admin_router, prefix="/admin", tags=["admin"])
 app.include_router(product_router, tags=["products"])
-app.include_router(cart_router, tags=["cart"])
-app.include_router(order_router, tags=["orders and checkout"])
+app.include_router(cart_router, prefix="/cart", tags=["cart"])
+app.include_router(order_router, prefix="/orders", tags=["orders and checkout"])
 
 
 # print(cart.__table__.columns.keys())

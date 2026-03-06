@@ -10,3 +10,4 @@ class Product(Base):
     p_price = Column(Integer)
     p_discount = Column(Float)
     p_image = Column(LargeBinary)
+    p_category = Column(String)

@@ -1,171 +1,94 @@
-from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, Depends, UploadFile, File, Form
 from sqlalchemy.orm import Session
-from config.db import SessionLocal
-from models.product_models import Product
-from Schemas.product_schema import ProductDelete
-from models.order_models import Order
-from models.order_items_models import OrderItem
 from middlewares.Auth_middleware import admin_required
-import base64
-
+from utils.db_dependency import get_db
+from controllers.admin_controller import (
+    viewproducts,
+    create_product,
+    removeproduct,
+    update_product,
+    getorderdetails,
+    updateorder,
+    admin_dashboard
+)
 router = APIRouter()
 
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+@router.get("/products")
+def view_products(admin=Depends(admin_required),
+                  db: Session = Depends(get_db)):
+    return viewproducts(admin, db)
 
 
 @router.post("/create-product")
-async def create_product(
+async def create_product_route(
     p_name: str = Form(...),
     p_description: str = Form(...),
     p_price: int = Form(...),
     p_discount: int = Form(...),
+    p_category: str = Form(...),
     image: UploadFile = File(None),
     admin=Depends(admin_required),
     db: Session = Depends(get_db),
 ):
-    image_bytes = None
-    if image:
-        image_bytes = await image.read()
-
-    new_product = Product(
-        p_name=p_name,
-        p_description=p_description,
-        p_price=p_price,
-        p_discount=p_discount,
-        p_image=image_bytes,
+    return await create_product(
+        p_name,
+        p_description,
+        p_price,
+        p_discount,
+        p_category,
+        image,
+        admin,
+        db,
     )
-
-    db.add(new_product)
-    db.commit()
-    db.refresh(new_product)
-
-    image_base64 = None
-    if new_product.p_image:
-        image_base64 = base64.b64encode(new_product.p_image).decode("utf-8")
-
-    return {
-        "message": "Product created successfully",
-        "created_by_admin": admin["user_id"],
-        "product": {
-            "id": new_product.id,
-            "p_name": new_product.p_name,
-            "p_description": new_product.p_description,
-            "p_price": new_product.p_price,
-            "p_discount": new_product.p_discount,
-            "p_image": image_base64,
-        },
-    }
 
 
 @router.post("/remove-product")
-def removeproduct(
-    product: ProductDelete, admin=Depends(admin_required), 
-    db: Session = Depends(get_db)
-):
-    db_product = db.query(Product).filter(Product.id == product.id).first()
-
-    if not db_product:
-        return {"message": "product not found !"}
-    db.delete(db_product)
-    db.commit()
-
-    return {
-        "message": "product deleted successlly",
-        "deletedby_admin": admin["user_id"],
-    }
+def remove_product(product_id: int, admin=Depends(admin_required),
+                   db: Session = Depends(get_db)):
+    return removeproduct(product_id, admin, db)
 
 
 @router.post("/update-product")
-async def Productupdate(
+async def update_product_route(
     id: int = Form(...),
     p_name: str = Form(...),
     p_description: str = Form(...),
     p_price: int = Form(...),
     p_discount: int = Form(...),
+    p_category: str = Form(...),
     image: UploadFile = File(None),
     admin=Depends(admin_required),
     db: Session = Depends(get_db),
 ):
-    db_product = db.query(Product).filter(Product.id == id).first()
-
-    if not db_product:
-        return {"message": "product not found"}
-
-    db_product.p_name = p_name
-    db_product.p_description = p_description
-    db_product.p_price = p_price
-    db_product.p_discount = p_discount
-
-    if image:
-        image_bytes = await image.read()
-        db_product.p_image = image_bytes
-
-    db.commit()
-    db.refresh(db_product)
-
-    image_base64 = None
-    if db_product.p_image:
-        image_base64 = base64.b64encode(db_product.p_image).decode("utf-8")
-
-    return {
-        "message": "product updated successfully",
-        "updatedbyadmin": admin["user_id"],
-        "product": {
-            "id": db_product.id,
-            "p_name": db_product.p_name,
-            "p_description": db_product.p_description,
-            "p_price": db_product.p_price,
-            "p_discount": db_product.p_discount,
-            "p_image": image_base64,
-        },
-    }
+    return await update_product(
+        id,
+        p_name,
+        p_description,
+        p_price,
+        p_discount,
+        p_category,
+        image,
+        admin,
+        db,
+    )
 
 
 @router.get("/orders")
-def getorderdetails(admin=Depends(admin_required), db: Session = Depends(get_db)):
-    orders = db.query(Order).all()
-    result = []
-    for order in orders:
-        order_items = db.query(OrderItem, Product).join(Product, Product.id == OrderItem.product_id).filter(OrderItem.order_id == order.id).all()
-        products = []
-        for item, product in order_items:
-            products.append({
-                "product_id": product.id,
-                "product_name": product.p_name,
-                "price": item.price,
-                "quantity": item.quantity
-            })
-        result.append({
-            "order_id": order.id,
-            "user_id": order.user_id,
-            "total_price": order.total_price,
-            "status": order.status,
-            "products": products
-        })
-    return {
-        "admin_id": admin["user_id"],
-        "orders": result
-    }
+def get_orders(admin=Depends(admin_required), db: Session = Depends(get_db)):
+    return getorderdetails(admin, db)
 
 
 @router.post("/update-order/status")
-def updateorder(order_id: int, status: str, admin=Depends(admin_required), db: Session = Depends(get_db)):
-    order = db.query(Order).filter(Order.id == order_id).first()
-    if not order:
-        raise HTTPException(status_code=404, detail="Order not found")
-    order.status = status
-    db.commit()
-    db.refresh(order)
+def update_order_status(
+    order_id: int,
+    status: str,
+    admin=Depends(admin_required),
+    db: Session = Depends(get_db),
+):
+    return updateorder(order_id, status, admin, db)
 
-    return {
-        "message": "Order status updated successfully",
-        "updated_by_admin": admin["user_id"],
-        "order_id": order.id,
-        "new_status": order.status
-    }
+
+@router.get("/dashboard")
+def dashboard(admin=Depends(admin_required), db: Session = Depends(get_db)):
+    return admin_dashboard(admin, db)

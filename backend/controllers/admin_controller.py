@@ -1,0 +1,198 @@
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
+from models.product_models import Product
+from models.order_models import Order
+from models.order_items_models import OrderItem
+from models.user_models import User
+import base64
+
+
+def viewproducts(admin, db: Session):
+    products = db.query(Product).all()
+    product_list = []
+    for product in products:
+        image_base64 = None
+        if product.p_image:
+            image_base64 = base64.b64encode(product.p_image).decode("utf-8")
+        product_list.append(
+            {
+                "id": product.id,
+                "p_name": product.p_name,
+                "p_description": product.p_description,
+                "p_price": product.p_price,
+                "p_discount": product.p_discount,
+                "p_category": product.p_category,
+                "p_image": image_base64,
+            }
+        )
+    return {
+        "message": "Products fetch successfully.",
+        "total products": len(product_list),
+        "products": product_list
+    }
+
+
+async def create_product(
+    p_name,
+    p_description,
+    p_price,
+    p_discount,
+    p_category,
+    image,
+    admin,
+    db: Session,
+):
+    image_bytes = None
+
+    if image:
+        image_bytes = await image.read()
+
+    new_product = Product(
+        p_name=p_name,
+        p_description=p_description,
+        p_price=p_price,
+        p_discount=p_discount,
+        p_category=p_category,
+        p_image=image_bytes,
+    )
+
+    db.add(new_product)
+    db.commit()
+    db.refresh(new_product)
+
+    image_base64 = None
+
+    if new_product.p_image:
+        image_base64 = base64.b64encode(new_product.p_image).decode("utf-8")
+
+    return {
+        "message": "Product created successfully",
+        "created_by_admin": admin["user_id"],
+        "product": {
+            "id": new_product.id,
+            "p_name": new_product.p_name,
+            "p_description": new_product.p_description,
+            "p_price": new_product.p_price,
+            "p_discount": new_product.p_discount,
+            "p_category": new_product.p_category,
+            "p_image": image_base64,
+        },
+    }
+
+
+def removeproduct(product_id, admin, db: Session):
+    db_product = db.query(Product).filter(Product.id == product_id).first()
+    if not db_product:
+        raise HTTPException(status_code=404, detail="product not found")
+    db.delete(db_product)
+    db.commit()
+    return {
+        "message": "product deleted successfully",
+        "deleted_by_admin": admin["user_id"],
+    }
+
+
+async def update_product(
+    id,
+    p_name,
+    p_description,
+    p_price,
+    p_discount,
+    p_category,
+    image,
+    admin,
+    db: Session,
+):
+
+    db_product = db.query(Product).filter(Product.id == id).first()
+    if not db_product:
+        raise HTTPException(status_code=404, detail="product not found")
+    db_product.p_name = p_name
+    db_product.p_description = p_description
+    db_product.p_price = p_price
+    db_product.p_discount = p_discount
+    db_product.p_category = p_category
+    if image:
+        image_bytes = await image.read()
+        db_product.p_image = image_bytes
+    db.commit()
+    db.refresh(db_product)
+    image_base64 = None
+    if db_product.p_image:
+        image_base64 = base64.b64encode(db_product.p_image).decode("utf-8")
+    return {
+        "message": "product updated successfully",
+        "updated_by_admin": admin["user_id"],
+        "product": {
+            "id": db_product.id,
+            "p_name": db_product.p_name,
+            "p_description": db_product.p_description,
+            "p_price": db_product.p_price,
+            "p_discount": db_product.p_discount,
+            "p_category": db_product.p_category,
+            "p_image": image_base64,
+        },
+    }
+
+
+def getorderdetails(admin, db: Session):
+    orders = db.query(Order).all()
+    result = []
+    for order in orders:
+        order_items = (
+            db.query(OrderItem, Product)
+            .join(Product, Product.id == OrderItem.product_id)
+            .filter(OrderItem.order_id == order.id)
+            .all()
+        )
+        products = []
+        for item, product in order_items:
+            products.append({
+                "product_id": product.id,
+                "product_name": product.p_name,
+                "price": item.price,
+                "quantity": item.quantity
+            })
+        result.append({
+            "order_id": order.id,
+            "user_id": order.user_id,
+            "total_price": order.total_price,
+            "status": order.status,
+            "products": products
+        })
+    return {
+        "admin_id": admin["user_id"],
+        "orders": result
+    }
+
+
+def updateorder(order_id, status, admin, db: Session):
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    order.status = status
+    db.commit()
+    db.refresh(order)
+    return {
+        "message": "Order status updated successfully",
+        "updated_by_admin": admin["user_id"],
+        "order_id": order.id,
+        "new_status": order.status
+    }
+
+
+def admin_dashboard(admin, db: Session):
+    total_users = db.query(User).count()
+    total_products = db.query(Product).count()
+    total_orders = db.query(Order).count()
+    total_revenue = db.query(Order.total_price).all()
+    revenue_sum = sum(order[0] for order in total_revenue)
+    return {
+        "admin_id": admin["user_id"],
+        "dashboard": {
+            "total_users": total_users,
+            "total_products": total_products,
+            "total_orders": total_orders,
+            "total_revenue": revenue_sum
+        }
+    }
