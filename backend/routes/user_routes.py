@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 import random
 from utils.jwt_handler import create_access_token
 from utils.send_email import send_otp_email
+# from middlewares.Auth_middleware import get_current_user
 
 router = APIRouter()
 
@@ -25,11 +26,20 @@ def get_db():
 @router.post("/signup")
 async def signup(user: UserCreate, db: Session = Depends(get_db)):
     existing = db.query(User).filter(User.email == user.email).first()
-    if existing:
-        raise HTTPException(status_code=400, detail="User already exists")
-    hashpassword = pwd.hash(user.password)
     generated_otp = random.randint(100000, 999999)
     otp_expiry_time = datetime.utcnow() + timedelta(minutes=5)
+    if existing:
+        if existing.is_active:
+            raise HTTPException(status_code=400, detail="User already exists")
+        existing.otp = generated_otp
+        existing.otp_expiry = otp_expiry_time
+        db.commit()
+        await send_otp_email(user.email, generated_otp)
+        return {
+            "message": "OTP resent to email",
+            "email": existing.email
+        }
+    hashpassword = pwd.hash(user.password)
     new_user = User(
         name=user.name,
         email=user.email,
@@ -86,3 +96,10 @@ def login(user: LoginUser, db: Session = Depends(get_db)):
         "email": dbuser.email,
         "role": dbuser.role,
     }
+
+
+# @router.post("/logout")
+# def logout(user=Depends(get_current_user)):
+#     return {
+#         "message": "logged out sucessfully"
+#     }
