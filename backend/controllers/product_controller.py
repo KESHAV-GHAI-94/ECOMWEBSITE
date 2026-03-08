@@ -39,7 +39,8 @@ def viewproduct(id: int, db: Session):
     image_base64 = None
     if product.p_image:
         image_base64 = base64.b64encode(product.p_image).decode("utf-8")
-    final_price = product.p_price - (product.p_price * product.p_discount / 100)
+    final_price = product.p_price - (
+        product.p_price * product.p_discount / 100)
 
     return {
         "product": {
@@ -65,7 +66,8 @@ def searchproduct(search: str, db: Session):
         image_base64 = None
         if product.p_image:
             image_base64 = base64.b64encode(product.p_image).decode("utf-8")
-        final_price = product.p_price - (product.p_price * product.p_discount / 100)
+        final_price = product.p_price - (
+            product.p_price * product.p_discount / 100)
         result.append({
             "id": product.id,
             "p_name": product.p_name,
@@ -89,7 +91,8 @@ def filterproduct(category: str, db: Session):
         image_base64 = None
         if product.p_image:
             image_base64 = base64.b64encode(product.p_image).decode("utf-8")
-        final_price = product.p_price - (product.p_price * product.p_discount / 100)
+        final_price = product.p_price - (
+            product.p_price * product.p_discount / 100)
         result.append({
             "id": product.id,
             "p_name": product.p_name,

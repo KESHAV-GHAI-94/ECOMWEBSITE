@@ -39,9 +39,7 @@ const StatCard = ({ title, value, icon, color }) => (
         {value || 0}
       </h2>
     </div>
-    <div className={`${color} text-white p-2 sm:p-3 rounded-lg`}>
-      {icon}
-    </div>
+    <div className={`${color} text-white p-2 sm:p-3 rounded-lg`}>{icon}</div>
   </div>
 );
 

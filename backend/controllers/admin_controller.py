@@ -175,6 +175,51 @@ def getorderdetails(admin, db: Session):
     }
 
 
+def get_order_details(order_id: int, admin, db: Session):
+
+    order_data = (
+        db.query(Order, User)
+        .join(User, User.id == Order.user_id)
+        .filter(Order.id == order_id)
+        .first()
+    )
+    if not order_data:
+        raise HTTPException(status_code=404, detail="Order not found")
+    order, user = order_data
+    order_items = (
+        db.query(OrderItem, Product)
+        .join(Product, Product.id == OrderItem.product_id)
+        .filter(OrderItem.order_id == order.id)
+        .all()
+    )
+    products = []
+    for item, product in order_items:
+        image_base64 = None
+        if product.p_image:
+            image_base64 = base64.b64encode(product.p_image).decode("utf-8")
+        products.append({
+            "product_id": product.id,
+            "product_name": product.p_name,
+            "product_image": image_base64,
+            "p_discount": product.p_discount,
+            "p_category": product.p_category,
+            "price": item.price,
+            "quantity": item.quantity
+        })
+    return {
+        "admin_id": admin["user_id"],
+        "order": {
+            "order_id": order.id,
+            "user_id": order.user_id,
+            "user_name": user.name,
+            "user_email": user.email,
+            "total_price": order.total_price,
+            "status": order.status,
+            "products": products
+        }
+    }
+
+
 def updateorder(order_id, status, admin, db: Session):
     order = db.query(Order).filter(Order.id == order_id).first()
     if not order:

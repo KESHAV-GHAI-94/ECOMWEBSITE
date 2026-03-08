@@ -72,29 +72,6 @@ const ProductEdit = () => {
     }
     return true;
   };
-  const updateProduct = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
-    try {
-      const form = new FormData();
-      form.append("id", id);
-      form.append("p_name", product.p_name);
-      form.append("p_description", product.p_description);
-      form.append("p_price", product.p_price);
-      form.append("p_discount", product.p_discount);
-      form.append("p_category", product.p_category);
-      if (image) {
-        form.append("image", image);
-      }
-      await Api.post("/admin/update-product", form);
-      toast.success("Product updated successfully");
-      setTimeout(() => {
-        navigate("/admin/products");
-      }, 1000);
-    } catch {
-      toast.error("Update failed");
-    }
-  };
   const confirmUpdate = async () => {
     const form = new FormData();
     form.append("id", id);
@@ -109,7 +86,7 @@ const ProductEdit = () => {
     try {
       await Api.post("/admin/update-product", form);
       toast.success("Product updated");
-      navigate("/admin/products");
+      navigate("/products");
     } catch {
       toast.error("Update failed");
     }
@@ -120,7 +97,7 @@ const ProductEdit = () => {
         params: { product_id: id },
       });
       toast.success("Product deleted");
-      navigate("/admin/products");
+      navigate("/products");
     } catch {
       toast.error("Delete failed");
     }
@@ -134,7 +111,7 @@ const ProductEdit = () => {
             Product Edit Page
           </h2>
           <button
-            onClick={() => navigate("/admin/products")}
+            onClick={() => navigate(-1)}
             className="self-end sm:self-auto flex items-center gap-2 bg-white border border-gray-300 hover:bg-gray-100 px-4 sm:px-5 py-2 text-sm sm:text-base rounded-lg shadow-sm"
           >
             Back

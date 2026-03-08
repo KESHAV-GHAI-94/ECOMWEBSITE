@@ -129,14 +129,14 @@ const Signup = () => {
         <div className="hidden md:flex w-1/2 bg-blue-600 text-white items-center justify-center px-8 lg:px-12">
           <div>
             <h1 className="text-3xl lg:text-5xl font-bold mb-4 lg:mb-6">
-              Start Shopping 
+              Start Shopping
             </h1>
             <p className="text-sm sm:text-base lg:text-lg leading-relaxed">
               Join thousands of happy customers and explore amazing deals, fast
               delivery, and secure payments on our platform.
             </p>
             <div className="mt-6 text-xs sm:text-sm opacity-90">
-               Easy signup
+              Easy signup
               <br />
               Secure account
               <br /> Exclusive member offers

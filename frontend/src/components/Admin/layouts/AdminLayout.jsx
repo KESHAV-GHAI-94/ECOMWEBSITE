@@ -1,4 +1,4 @@
-import { Outlet,useLocation } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { useState } from "react";
 import AdminSidebar from "../Sidebar";
 
@@ -6,7 +6,7 @@ const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const path = location.pathname.split("/")[1] || "admin";
-const title = path.charAt(0).toUpperCase() + path.slice(1);
+  const title = path.charAt(0).toUpperCase() + path.slice(1);
   return (
     <div className="flex h-screen w-full bg-gray-100 overflow-hidden">
       <div className="hidden md:block h-screen">

@@ -9,6 +9,7 @@ from controllers.admin_controller import (
     update_product,
     getorderdetails,
     updateorder,
+    get_order_details,
     admin_dashboard
 )
 router = APIRouter()
@@ -77,6 +78,13 @@ async def update_product_route(
 @router.get("/orders")
 def get_orders(admin=Depends(admin_required), db: Session = Depends(get_db)):
     return getorderdetails(admin, db)
+
+
+@router.get("/order/{order_id}")
+def order_details(order_id: int,
+                  admin=Depends(admin_required),
+                  db: Session = Depends(get_db)):
+    return get_order_details(order_id, admin, db)
 
 
 @router.post("/update-order/status")

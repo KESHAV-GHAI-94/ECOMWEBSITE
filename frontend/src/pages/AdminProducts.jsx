@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Api from "../Api";
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import CreateProductModal from "../components/modals/CreateProductModal";
 
 const AdminProducts = () => {
@@ -22,8 +22,8 @@ const AdminProducts = () => {
     setCurrentPage(1);
   };
   useEffect(() => {
-  fetchProducts();
-}, [category]);
+    fetchProducts();
+  }, [category]);
 
   const handleSearch = async () => {
     if (!search) {
@@ -45,55 +45,53 @@ const AdminProducts = () => {
 
   return (
     <div className="px-4 sm:px-6 md:px-10 py-6 bg-gray-50 min-h-screen">
-  <div className="max-w-7xl mx-auto space-y-6">
-
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-800">
-        Products
-      </h2>
-
-      <button
-        onClick={() => setCreateModal(true)}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 text-sm sm:text-base rounded-lg shadow-sm"
-      >
-        Create Product
-      </button>
-    </div>
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-800">
+            Products
+          </h2>
+          <button
+            onClick={() => setCreateModal(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 text-sm sm:text-base rounded-lg shadow-sm"
+          >
+            Create Product
+          </button>
+        </div>
         <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-start sm:items-center bg-white p-4 rounded-xl shadow-sm">
-  <input
-    type="text"
-    placeholder="Search products"
-    value={search}
-    onChange={(e) => setSearch(e.target.value)}
-    className="px-3 py-2 w-full sm:w-64 rounded-lg border bg-white p-4 shadow-sm sticky  z-10 border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
+          <input
+            type="text"
+            placeholder="Search products"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="px-3 py-2 w-full sm:w-64 rounded-lg border bg-white p-4 shadow-sm sticky  z-10 border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
 
-  <button
-    onClick={handleSearch}
-    className="bg-gray-800 hover:bg-black text-white px-4 py-2 text-sm sm:text-base rounded-lg"
-  >
-    Search
-  </button>
+          <button
+            onClick={handleSearch}
+            className="bg-gray-800 hover:bg-black text-white px-4 py-2 text-sm sm:text-base rounded-lg"
+          >
+            Search
+          </button>
 
-  <select
-    value={category}
-    onChange={(e) => handleFilter(e.target.value)}
-    className="px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="">All Categories</option>
-    <option value="electronics">Electronics</option>
-    <option value="fashion">Fashion</option>
-    <option value="books">Books</option>
-    <option value="home">Home</option>
-  </select>
-</div>
+          <select
+            value={category}
+            onChange={(e) => handleFilter(e.target.value)}
+            className="px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">All Categories</option>
+            <option value="electronics">Electronics</option>
+            <option value="fashion">Fashion</option>
+            <option value="books">Books</option>
+            <option value="home">Home</option>
+          </select>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {currentProducts.map((product) => {
             const image = product.p_image
               ? `data:image/*;base64,${product.p_image}`
               : placeholder;
             return (
-              <Link key={product.id} to={`/admin-product/${product.id}`}>
+              <Link key={product.id} to={`/product/${product.id}`}>
                 <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition duration-300 overflow-hidden group">
                   <div className="h-44 sm:h-48 md:h-52 w-full bg-gray-100 overflow-hidden">
                     <img

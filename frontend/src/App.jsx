@@ -7,6 +7,8 @@ import Shop from "./pages/shop"
 import AdminLayout from "./components/Admin/layouts/AdminLayout"
 import AdminProducts from "./pages/AdminProducts"
 import ProductEdit from "./pages/ProductEdit"
+import AdminOrders from "./pages/AdminOrders"
+import AdminOrderDetails from "./pages/AdminOrderDetails"
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const App =() => {
@@ -17,8 +19,10 @@ const App =() => {
         <Route path="/signup" element={<Signup/>}/>
         <Route element={<AdminLayout />}>
         <Route path="/dashboard" element={<Admin/>}/>
-        <Route path="/admin/products" element={<AdminProducts/>}/>
-        <Route path="/admin-product/:id" element={<ProductEdit/>}/>
+        <Route path="/products" element={<AdminProducts/>}/>
+        <Route path="/product/:id" element={<ProductEdit/>}/>
+        <Route path="/orders" element={<AdminOrders/>}/>
+        <Route path="/admin/order/:id" element={<AdminOrderDetails />} />
         </Route>
         <Route path="/shop" element={<Shop/>}/>
       </Routes>

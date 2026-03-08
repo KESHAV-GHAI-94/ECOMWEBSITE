@@ -18,7 +18,9 @@ const OtpModal = ({
         >
           ✕
         </button>
-        <h2 className="text-base md:text-lg font-semibold text-center mb-4">{title}</h2>
+        <h2 className="text-base md:text-lg font-semibold text-center mb-4">
+          {title}
+        </h2>
         {email && (
           <p className="text-xs md:text-sm text-gray-500 text-center mb-4">
             OTP sent to <span className="font-medium">{email}</span>
