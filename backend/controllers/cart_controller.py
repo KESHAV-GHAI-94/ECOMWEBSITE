@@ -62,25 +62,41 @@ def updatequantity(data, user, db: Session):
 
 
 def viewcart(user, db: Session):
+
     cart_items = db.query(Cart).filter(Cart.user_id == user["user_id"]).all()
     if not cart_items:
-        raise HTTPException(status_code=404, detail="no item in cart.")
+        raise HTTPException(status_code=404, detail="no item in cart")
     result = []
+    cart_total_price = 0
+    cart_total_after_discount = 0
+    total_items = 0
     for item in cart_items:
         product = db.query(Product).filter(
             Product.id == item.product_id).first()
         if not product:
             continue
-        result.append(
-            {
-                "product_id": product.id,
-                "product_name": product.p_name,
-                "price": product.p_price,
-                "quantity": item.quantity,
-                "total_price": product.p_price * item.quantity,
-                "discount": product.p_discount,
-                "final_price": (product.p_price * item.quantity)
-                - (product.p_discount * item.quantity),
-            }
+        price_after_discount = round(
+            product.p_price - (product.p_price * product.p_discount / 100), 2
         )
-    return {"user_id": user["user_id"], "cart": result}
+        total_price = product.p_price * item.quantity
+        total_after_discount = price_after_discount * item.quantity
+        cart_total_price += total_price
+        cart_total_after_discount += total_after_discount
+        total_items += item.quantity
+        result.append({
+            "product_id": product.id,
+            "product_name": product.p_name,
+            "price": product.p_price,
+            "discount": product.p_discount,
+            "price_after_discount": price_after_discount,
+            "quantity": item.quantity,
+            "total_price": total_price,
+            "total_after_discount": total_after_discount
+        })
+    return {
+        "user_id": user["user_id"],
+        "total_items": total_items,
+        "cart_total_price": cart_total_price,
+        "cart_total_after_discount": cart_total_after_discount,
+        "cart": result
+    }

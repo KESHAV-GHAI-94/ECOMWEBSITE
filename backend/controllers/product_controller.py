@@ -11,6 +11,8 @@ def viewproducts(db: Session):
         image_base64 = None
         if product.p_image:
             image_base64 = base64.b64encode(product.p_image).decode("utf-8")
+            final_price = product.p_price - (
+                product.p_price * product.p_discount / 100)
         product_list.append(
             {
                 "id": product.id,
@@ -20,6 +22,7 @@ def viewproducts(db: Session):
                 "p_discount": product.p_discount,
                 "p_category": product.p_category,
                 "p_image": image_base64,
+                "price_after_discount": round(final_price, 2)
             }
         )
     return {
@@ -29,12 +32,15 @@ def viewproducts(db: Session):
 
 
 def viewproduct(id: int, db: Session):
+
     product = db.query(Product).filter(Product.id == id).first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     image_base64 = None
     if product.p_image:
         image_base64 = base64.b64encode(product.p_image).decode("utf-8")
+    final_price = product.p_price - (product.p_price * product.p_discount / 100)
+
     return {
         "product": {
             "id": product.id,
@@ -43,27 +49,35 @@ def viewproduct(id: int, db: Session):
             "p_price": product.p_price,
             "p_discount": product.p_discount,
             "p_category": product.p_category,
+            "price_after_discount": round(final_price, 2),
             "p_image": image_base64
         }
     }
 
 
 def searchproduct(search: str, db: Session):
+
     products = db.query(Product).filter(
-        Product.p_name.ilike(f"%{search}%")).all()
-    if not products:
-        raise HTTPException(status_code=404, detail="No products found")
+        Product.p_name.ilike(f"%{search}%")
+    ).all()
     result = []
     for product in products:
+        image_base64 = None
+        if product.p_image:
+            image_base64 = base64.b64encode(product.p_image).decode("utf-8")
+        final_price = product.p_price - (product.p_price * product.p_discount / 100)
         result.append({
             "id": product.id,
-            "name": product.p_name,
-            "description": product.p_description,
-            "price": product.p_price,
-            "discount": product.p_discount
+            "p_name": product.p_name,
+            "p_description": product.p_description,
+            "p_price": product.p_price,
+            "p_discount": product.p_discount,
+            "p_category": product.p_category,
+            "price_after_discount": round(final_price, 2),
+            "p_image": image_base64
         })
     return {
-        "searched": search,
+        "search": search,
         "results": result
     }
 
@@ -75,6 +89,7 @@ def filterproduct(category: str, db: Session):
         image_base64 = None
         if product.p_image:
             image_base64 = base64.b64encode(product.p_image).decode("utf-8")
+        final_price = product.p_price - (product.p_price * product.p_discount / 100)
         result.append({
             "id": product.id,
             "p_name": product.p_name,
@@ -82,6 +97,7 @@ def filterproduct(category: str, db: Session):
             "p_price": product.p_price,
             "p_discount": product.p_discount,
             "p_category": product.p_category,
+            "price_after_discount": round(final_price, 2),
             "p_image": image_base64
         })
     return {

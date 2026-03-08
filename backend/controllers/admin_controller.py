@@ -8,12 +8,15 @@ import base64
 
 
 def viewproducts(admin, db: Session):
+
     products = db.query(Product).all()
     product_list = []
     for product in products:
         image_base64 = None
         if product.p_image:
             image_base64 = base64.b64encode(product.p_image).decode("utf-8")
+        final_price = product.p_price - (
+            product.p_price * product.p_discount / 100)
         product_list.append(
             {
                 "id": product.id,
@@ -23,11 +26,12 @@ def viewproducts(admin, db: Session):
                 "p_discount": product.p_discount,
                 "p_category": product.p_category,
                 "p_image": image_base64,
+                "price_after_discount": round(final_price, 2)
             }
         )
     return {
         "message": "Products fetch successfully.",
-        "total products": len(product_list),
+        "total_products": len(product_list),
         "products": product_list
     }
 
@@ -136,9 +140,13 @@ async def update_product(
 
 
 def getorderdetails(admin, db: Session):
-    orders = db.query(Order).all()
+    orders = (
+        db.query(Order, User)
+        .join(User, User.id == Order.user_id)
+        .all()
+    )
     result = []
-    for order in orders:
+    for order, user in orders:
         order_items = (
             db.query(OrderItem, Product)
             .join(Product, Product.id == OrderItem.product_id)
@@ -156,6 +164,7 @@ def getorderdetails(admin, db: Session):
         result.append({
             "order_id": order.id,
             "user_id": order.user_id,
+            "user_name": user.name,
             "total_price": order.total_price,
             "status": order.status,
             "products": products
