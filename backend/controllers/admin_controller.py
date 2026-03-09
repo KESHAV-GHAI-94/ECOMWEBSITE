@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from models.product_models import Product
 from models.order_models import Order
 from models.order_items_models import OrderItem
@@ -8,7 +9,6 @@ import base64
 
 
 def viewproducts(admin, db: Session):
-
     products = db.query(Product).all()
     product_list = []
     for product in products:
@@ -249,4 +249,30 @@ def admin_dashboard(admin, db: Session):
             "total_orders": total_orders,
             "total_revenue": revenue_sum
         }
+    }
+
+
+def get_top_products(admin, db: Session):
+    top_products = (
+        db.query(
+            Product.id,
+            Product.p_name,
+            func.sum(OrderItem.quantity).label("total_sold")
+        )
+        .join(OrderItem, OrderItem.product_id == Product.id)
+        .group_by(Product.id, Product.p_name)
+        .order_by(func.sum(OrderItem.quantity).desc())
+        .limit(3)
+        .all()
+    )
+    result = []
+    for product in top_products:
+        result.append({
+            "id": product.id,
+            "p_name": product.p_name,
+            "total_sold": product.total_sold
+        })
+    return {
+        "admin_id": admin["user_id"],
+        "top_products": result
     }

@@ -57,7 +57,7 @@ const AdminProducts = () => {
             Create Product
           </button>
         </div>
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-start sm:items-center bg-white p-4 rounded-xl shadow-sm">
+        <div className="flex flex-row sm:flex-row flex-wrap gap-3 items-start sm:items-center bg-white p-4 rounded-xl shadow-sm">
           <input
             type="text"
             placeholder="Search products"
@@ -74,7 +74,7 @@ const AdminProducts = () => {
           <select
             value={category}
             onChange={(e) => handleFilter(e.target.value)}
-            className="px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-1.5 md:py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Categories</option>
             <option value="electronics">Electronics</option>

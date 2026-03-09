@@ -10,7 +10,8 @@ from controllers.admin_controller import (
     getorderdetails,
     updateorder,
     get_order_details,
-    admin_dashboard
+    admin_dashboard,
+    get_top_products
 )
 router = APIRouter()
 
@@ -100,3 +101,8 @@ def update_order_status(
 @router.get("/dashboard")
 def dashboard(admin=Depends(admin_required), db: Session = Depends(get_db)):
     return admin_dashboard(admin, db)
+
+
+@router.get("/top-products")
+def top_products(admin=Depends(admin_required), db: Session = Depends(get_db)):
+    return get_top_products(admin, db)

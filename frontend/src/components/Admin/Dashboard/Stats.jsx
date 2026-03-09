@@ -1,8 +1,22 @@
 import { Users, Package, ShoppingCart, IndianRupee } from "lucide-react";
 
 const Stats = ({ stats }) => {
+  const formatNumber = (num) => {
+  if (!num) return 0;
+  if (num >= 10000000) {
+    return (num / 10000000).toFixed(2) + " Cr";
+  }
+  if (num >= 100000) {
+    return (num / 100000).toFixed(2) + " Lacs";
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(2) + " K";
+  }
+
+  return num;
+};
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-6">
       <StatCard
         title="Users"
         value={stats.total_users}
@@ -23,7 +37,7 @@ const Stats = ({ stats }) => {
       />
       <StatCard
         title="Revenue"
-        value={`₹${stats.total_revenue}`}
+        value={`₹${formatNumber(stats.total_revenue)}`}
         icon={<IndianRupee className="w-4 h-4 sm:w-5 sm:h-5" />}
         color="bg-green-500"
       />

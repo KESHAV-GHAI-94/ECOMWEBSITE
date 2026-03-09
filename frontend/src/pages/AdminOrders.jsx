@@ -6,7 +6,7 @@ const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [filter, setFilter] = useState("latest");
-  const ordersPerPage = 10;
+  const ordersPerPage = 6;
   const navigate = useNavigate();
   const fetchOrders = async () => {
     try {
@@ -36,14 +36,14 @@ const AdminOrders = () => {
     return "text-yellow-600 bg-yellow-100";
   };
   return (
-    <div className="px-4 sm:px-6 md:px-10 py-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-800">
+    <div className="px-4 sm:px-6 md:px-10 lg:px-14 py-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4">
+        <h2 className="text-lg sm:text-2xl md:text-3xl font-semibold text-gray-800">
           Orders
         </h2>
       </div>
-      <div className="bg-white rounded-xl shadow-sm p-4 sm:p-5">
-        <div className="flex items-center justify-between mb-4">
+      <div className="bg-white rounded-xl shadow-sm p-4 sm:p-5 max-w-5xl mx-auto">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
           <div className="flex items-center gap-2">
             <ShoppingCart className="text-purple-500" size={20} />
             <h2 className="font-semibold text-lg md:text-xl text-gray-800">
@@ -57,7 +57,7 @@ const AdminOrders = () => {
                 setFilter(e.target.value);
                 setCurrentPage(0);
               }}
-              className="border border-gray-200 rounded-lg px-3 py-1 text-sm"
+              className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm"
             >
               <option value="latest">Latest Orders</option>
               <option value="oldest">Oldest Orders</option>
@@ -71,7 +71,7 @@ const AdminOrders = () => {
                     setCurrentPage((prev) => Math.max(prev - 1, 0))
                   }
                   disabled={currentPage === 0}
-                  className="flex items-center justify-center h-8 w-8 rounded-md border border-gray-200 hover:bg-gray-100 disabled:opacity-40"
+                  className="flex items-center justify-center h-8 w-8 rounded-md border border-gray-200 hover:bg-gray-100 disabled:opacity-40 transition"
                 >
                   <ChevronLeft size={18} />
                 </button>
@@ -80,7 +80,7 @@ const AdminOrders = () => {
                     setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
                   }
                   disabled={currentPage === totalPages - 1}
-                  className="flex items-center justify-center h-8 w-8 rounded-md border border-gray-200 hover:bg-gray-100 disabled:opacity-40"
+                  className="flex items-center justify-center h-8 w-8 rounded-md border border-gray-200 hover:bg-gray-100 disabled:opacity-40 transition"
                 >
                   <ChevronRight size={18} />
                 </button>
@@ -98,7 +98,7 @@ const AdminOrders = () => {
               <div
                 key={order.order_id}
                 onClick={() => navigate(`/admin/order/${order.order_id}`)}
-                className="flex items-center justify-between bg-gray-50 p-3 sm:p-4 rounded-xl hover:bg-purple-50 transition group cursor-pointer"
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-gray-50 p-3 sm:p-4 rounded-xl hover:bg-purple-50 transition group cursor-pointer"
               >
                 <div>
                   <p className="font-medium text-sm sm:text-base text-gray-800 group-hover:text-purple-600">
@@ -108,12 +108,12 @@ const AdminOrders = () => {
                     User {order.user_name}
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="flex items-center justify-between sm:block sm:text-right w-full sm:w-auto">
                   <p className="text-sm sm:text-base font-semibold">
                     ₹{order.total_price}
                   </p>
                   <span
-                    className={`text-xs px-2 py-1 rounded ${statusColor(order.status)}`}
+                    className={`text-[11px] sm:text-xs px-2 py-1 rounded ${statusColor(order.status)}`}
                   >
                     {order.status}
                   </span>
