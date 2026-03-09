@@ -34,7 +34,19 @@ const Shop = () => {
       console.log(err);
     }
   };
-
+const AddtoProduct = async (productId) =>{
+    try{
+    const res = await Api.post(`/cart/add-to-product`,{
+        product_id: productId,
+        quantity: 1
+    });
+    console.log(res.data)
+    toast.success("Product add to cart successfully!");
+    } catch (err) {
+    console.error(err);
+    toast.error("Failed to add product");
+  }
+}
   const filterCategory = async (category) => {
     try {
       const res = await Api.get(`/filter/products/${category}`);
@@ -56,16 +68,16 @@ const Shop = () => {
 }, [search]);
 
   return (
-    <div className="bg-gray-100 min-h-screen px-6 md:px-16 py-5">
-      <h1 className="text-4xl font-bold mb-5 text-gray-800">Products</h1>
+    <div className="bg-gray-100 min-h-screen px-4 sm:px-6 md:px-12 lg:px-16 py-5">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-5 text-gray-800">Products</h1>
       <div className="flex flex-col md:flex-row gap-4 mb-10">
-        <div className="flex items-center bg-white border border-gray-300 rounded-xl px-4 py-3 w-full md:w-[400px] shadow-sm">
+        <div className="flex items-center bg-white border border-gray-300 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 w-full md:w-[350px] lg:w-[400px] shadow-sm">
           <input
             type="text"
             placeholder="Search products..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="outline-none w-full"
+            className="outline-none w-full text-sm sm:text-base"
           />
           <Search size={20} className="text-gray-500" />
         </div>
@@ -81,7 +93,7 @@ const Shop = () => {
                 filterCategory(selected);
               }
             }}
-            className="px-4 py-3 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Categories</option>
             <option value="electronics">Electronics</option>
@@ -91,7 +103,7 @@ const Shop = () => {
           </select>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
         {currentProducts.map((product) => (
           <div
             key={product.id}
@@ -107,16 +119,16 @@ const Shop = () => {
               <img
                 src={`data:image/jpeg;base64,${product.p_image}`}
                 alt={product.p_name}
-                className="h-52 border-b border-gray-200 w-full object-cover group-hover:scale-105 transition"
+                className="h-44 sm:h-48 md:h-52 border-b border-gray-200 w-full object-cover group-hover:scale-105 transition"
               />
             </div>
             <div className="p-4">
-              <h3 className="font-semibold text-gray-800 line-clamp-1">
+              <h3 className="font-semibold text-sm sm:text-base text-gray-800 line-clamp-1">
                 {product.p_name}
               </h3>
-              <p className="text-sm text-gray-500">{product.p_category}</p>
+              <p className="text-xs sm:text-sm text-gray-500">{product.p_category}</p>
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-blue-600 text-lg font-bold">
+                <span className="text-blue-600 text-base sm:text-lg font-bold">
                   ₹{product.price_after_discount}
                 </span>
                 {product.p_discount > 0 && (
@@ -129,10 +141,9 @@ const Shop = () => {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  toast.success("Product added to cart")
-                  // navigate("/user/cart");
+                  AddtoProduct(product.id);
                 }}
-                className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 transition"
+                className="mt-3 sm:mt-4 w-full bg-blue-600 text-white py-2 sm:py-2.5 text-sm sm:text-base rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 transition"
               >
                 <ShoppingCart size={16} />
                 Add to Cart
@@ -147,7 +158,7 @@ const Shop = () => {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`px-4 py-2 rounded-lg border transition
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base rounded-lg border transition
               ${
                 currentPage === page
                   ? "bg-blue-600 text-white"

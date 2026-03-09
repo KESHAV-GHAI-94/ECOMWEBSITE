@@ -43,18 +43,18 @@ const Cart = () => {
   };
 
   const checkoutorder = async () => {
-  try {
-    const res = await Api.post("/orders/checkout");
-    toast.success("Order placed successfully ");
-    setModal(null);
-    setTimeout(() => {
-      navigate("/");
-    }, 1500);
-  } catch (err) {
-    console.error(err);
-    toast.error("Checkout failed");
-  }
-};
+    try {
+      const res = await Api.post("/orders/checkout");
+      toast.success("Order placed successfully ");
+      setModal(null);
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
+    } catch (err) {
+      console.error(err);
+      toast.error("Checkout failed");
+    }
+  };
 
   useEffect(() => {
     getCart();
@@ -69,22 +69,30 @@ const Cart = () => {
         <p className="text-gray-500">
           Looks like you haven't added anything yet.
         </p>
+        <button
+          onClick={() => navigate("/shop")}
+          className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700"
+        >
+          Start Shopping
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="bg-gray-100 min-h-[calc(100vh-64px)] px-3 sm:px-6 md:px-12 lg:px-16 py-6 md:py-8">
-      <h1 className="text-2xl md:text-3xl font-bold mb-8">Shopping Cart</h1>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+    <div className="bg-gray-100 min-h-[calc(100vh-64px)] px-4 sm:px-6 md:px-10 lg:px-16 py-6 md:py-8">
+      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-6 sm:mb-8">
+        Shopping Cart
+      </h1>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 md:gap-8">
         <div className="lg:col-span-2 space-y-6 overflow-y-auto">
           {cart.cart.map((item) => (
             <div
               key={item.product_id}
-              className="bg-white rounded-xl shadow-sm p-4 sm:p-5 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6"
+              className="bg-white rounded-xl shadow-sm p-4 sm:p-5 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 hover:shadow-md transition"
             >
               <div className="flex gap-4">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
                   {item.product_image ? (
                     <img
                       src={`data:image/png;base64,${item.product_image}`}
@@ -96,7 +104,7 @@ const Cart = () => {
                   )}
                 </div>
                 <div>
-                  <h2 className="font-semibold text-base sm:text-lg">
+                  <h2 className="font-semibold text-sm sm:text-base md:text-lg">
                     {item.product_name}
                   </h2>
                   <p className="text-sm text-gray-500 flex items-center gap-2">
@@ -108,7 +116,7 @@ const Cart = () => {
                       </span>
                     )}
                   </p>
-                  <p className="text-blue-600 font-semibold">
+                  <p className="text-blue-600 font-semibold text-sm sm:text-base">
                     ₹{item.price_after_discount} each
                   </p>
                   <div className="flex items-center gap-2 sm:gap-3 mt-2 sm:mt-3">
@@ -116,7 +124,7 @@ const Cart = () => {
                       onClick={() =>
                         updateQuantity(item.product_id, item.quantity - 1)
                       }
-                      className="p-1 border rounded hover:bg-gray-100"
+                      className="p-1 sm:p-2 border rounded hover:bg-gray-100 transition"
                     >
                       <Minus size={16} />
                     </button>
@@ -125,7 +133,7 @@ const Cart = () => {
                       onClick={() =>
                         updateQuantity(item.product_id, item.quantity + 1)
                       }
-                      className="p-1 border rounded hover:bg-gray-100"
+                      className="p-1 sm:p-2 border rounded hover:bg-gray-100 transition"
                     >
                       <Plus size={16} />
                     </button>
@@ -138,7 +146,7 @@ const Cart = () => {
                 </p>
                 <button
                   onClick={() => removeProduct(item.product_id)}
-                  className="text-red-500 flex items-center gap-1 text-sm hover:underline"
+                  className="text-red-500 flex items-center gap-1 text-xs sm:text-sm hover:underline"
                 >
                   <Trash2 size={16} /> Remove
                 </button>
@@ -146,8 +154,10 @@ const Cart = () => {
             </div>
           ))}
         </div>
-        <div className="bg-white rounded-xl lg:w-1/4 shadow-sm  p-6 h-fit lg:fixed lg:top-38 lg:right-20">
-          <h2 className="text-xl font-semibold mb-6">Order Summary</h2>
+        <div className="bg-white rounded-xl shadow-sm p-5 sm:p-6 h-fit lg:sticky lg:top-24">
+          <h2 className="text-lg sm:text-xl font-semibold mb-6">
+            Order Summary
+          </h2>
           <div className="flex justify-between mb-3 text-gray-600">
             <span>Total Items</span>
             <span>{cart.total_items}</span>
@@ -171,8 +181,9 @@ const Cart = () => {
             <span>₹{cart.cart_total_after_discount}</span>
           </div>
           <button
-          onClick={() => setModal("Checkout")}
-          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition">
+            onClick={() => setModal("Checkout")}
+            className="w-full bg-blue-600 text-white py-2.5 sm:py-3 text-sm sm:text-base rounded-lg hover:bg-blue-700 transition"
+          >
             Proceed to Checkout
           </button>
         </div>
@@ -183,8 +194,8 @@ const Cart = () => {
           message={`Are you sure you want to pay this amount ₹${cart.cart_total_after_discount}?`}
           confirmText="Pay"
           confirmColor="bg-blue-600"
-          onConfirm={()=>{
-            checkoutorder()
+          onConfirm={() => {
+            checkoutorder();
           }}
           close={() => setModal(null)}
         />

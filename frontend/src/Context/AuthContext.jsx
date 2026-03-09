@@ -9,23 +9,28 @@ export const AuthProvider = ({ children }) => {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        if (!token) {
-          setLoading(false);
-          return;
-        }
-        const res = await Api.get("/profile");
-        setUser(res.data);
-      } catch (err) {
-        localStorage.removeItem("token");
-        setUser(null);
-      } finally {
+  const fetchProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
         setLoading(false);
+        return;
       }
-    };
-    fetchProfile();
-  }, [token]);
+
+      const res = await Api.get("/profile");
+      setUser(res.data);
+
+    } catch (err) {
+      localStorage.removeItem("token");
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProfile();
+}, []);
   const logout = () => {
     localStorage.removeItem("token");
     setUser(null);

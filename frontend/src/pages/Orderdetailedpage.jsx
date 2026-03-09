@@ -32,7 +32,7 @@ const Orderdetailedpage = () => {
 
   if (!order) return <p className="p-10 text-center">Loading...</p>;
   return (
-    <div className="px-4 sm:px-6 md:px-10 py-6 bg-gray-100 min-h-screen">
+    <div className="px-4 sm:px-6 md:px-10 py-6 bg-gray-100 min-h-[calc(100vh-64px)]">
       <div className="flex flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-800">
           Orders Detailed Page
@@ -50,7 +50,7 @@ const Orderdetailedpage = () => {
             Order #{order.order_id}
           </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-6 mb-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-6 mb-2">
           <div className="flex flex-col sm:flex-row gap-3 justify-between">
             <h3 className="font-semibold text-gray-700 mb-2">Order Info</h3>
             <p className="flex items-center gap-2 mb-1">
@@ -63,15 +63,17 @@ const Orderdetailedpage = () => {
               <b>Total Price:</b> ₹{order.total_price}
             </p>
           </div>
-          <div className="text-gray-400 gap-5 text-end">
-            Having issues ? 
-            <button
-              onClick={() => setModal("Cancel")}
-              className="text-white bg-red-500 px-3 py-1 rounded-lg hover:bg-red-600"
-            >
-              Cancel order
-            </button>
-          </div>
+          {order.status !== "Cancelled" && (
+  <div className="text-gray-400 gap-5 text-end">
+    Having issues ?
+    <button
+      onClick={() => setModal("Cancel")}
+      className="text-white bg-red-500 px-3 py-1 rounded-lg hover:bg-red-600"
+    >
+      Cancel order
+    </button>
+  </div>
+)}
         </div>
         <h3 className="font-semibold text-lg mb-4">Products</h3>
         <div className="space-y-4">
