@@ -60,7 +60,7 @@ const OrdersSection = ({ orders }) => {
                 <p className="font-medium text-sm text-gray-800 group-hover:text-purple-600">
                   Order #{order.order_id}
                 </p>
-                <p className="text-xs text-gray-400">User {order.user_name}</p>
+                <p className="text-xs text-gray-400">User: {order.user_name}</p>
               </div>
               <div className="text-right">
                 <p className="text-sm font-semibold">₹{order.total_price}</p>

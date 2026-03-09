@@ -37,7 +37,7 @@ const OtpModal = ({
           onClick={onVerify}
           disabled={loading}
           className={`w-full p-1.5 md:p-3 rounded-lg text-white font-semibold
-            ${loading ? "bg-gray-400" : "bg-taupe-800 hover:bg-taupe-600"}
+            ${loading ? "bg-gray-400" : "bg-yellow-500 hover:bg-yellow-600"}
           `}
         >
           {loading ? "Verifying..." : buttonText}

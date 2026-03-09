@@ -1,39 +1,36 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import ConfirmModal from "../components/modals/ConfirmModal";
 import Api from "../Api";
+import { toast } from "react-toastify";
 
-const AdminOrderDetails = () => {
+const Orderdetailedpage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const [status, setStatus] = useState("");
   const [order, setOrder] = useState(null);
-
-  const updateStatus = async () => {
+  const [modal, setModal] = useState(null);
+  const cancelOrder = async () => {
     try {
-      await Api.post(`/admin/update-order/status`, null, {
-        params: {
-          order_id: order.order_id,
-          status: status,
-        },
-      });
-      setOrder({ ...order, status });
+      await Api.post(`/orders/order-cancel/${order.order_id}`);
+      setOrder({ ...order, status: "Cancelled" });
+      setModal(null);
+      toast.success("order cancelled");
+      navigate(-1);
     } catch (err) {
+        toast.error(err)
       console.log(err);
     }
   };
-
   useEffect(() => {
     const getOrder = async () => {
-      const res = await Api.get(`/admin/order/${id}`);
-      setOrder(res.data.order);
-      setStatus(res.data.order.status);
+      const res = await Api.get(`/orders/order/${id}`);
+      console.log(res.data);
+      setOrder(res.data);
     };
     getOrder();
   }, [id]);
 
   if (!order) return <p className="p-10 text-center">Loading...</p>;
-
   return (
     <div className="px-4 sm:px-6 md:px-10 py-6 bg-gray-100 min-h-screen">
       <div className="flex flex-row sm:items-center sm:justify-between gap-4 mb-4">
@@ -52,43 +49,9 @@ const AdminOrderDetails = () => {
           <h2 className="text-xl sm:text-2xl font-bold">
             Order #{order.order_id}
           </h2>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="border border-gray-300 px-3 py-2 rounded-md text-sm"
-            >
-              <option value="pending">Pending</option>
-              <option value="processing">Processing</option>
-              <option value="shipped">Shipped</option>
-              <option value="delivered">Delivered</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-            <button
-              onClick={updateStatus}
-              disabled={status === order.status}
-              className={`px-4 py-2 text-sm rounded-lg border shadow-sm
-              ${
-                status === order.status
-                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  : "bg-white border-gray-300 hover:bg-gray-100"
-              }`}
-            >
-              Update
-            </button>
-          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-5">
-          <div>
-            <h3 className="font-semibold text-gray-700 mb-2">Customer Info</h3>
-            <p>
-              <b>Name:</b> {order.user_name}
-            </p>
-            <p>
-              <b>Email:</b> {order.user_email}
-            </p>
-          </div>
-          <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-6 mb-5">
+          <div className="flex flex-col sm:flex-row gap-3 justify-between">
             <h3 className="font-semibold text-gray-700 mb-2">Order Info</h3>
             <p className="flex items-center gap-2 mb-1">
               <b>Status:</b>
@@ -100,17 +63,26 @@ const AdminOrderDetails = () => {
               <b>Total Price:</b> ₹{order.total_price}
             </p>
           </div>
+          <div className="text-gray-400 gap-5 text-end">
+            Having issues ? 
+            <button
+              onClick={() => setModal("Cancel")}
+              className="text-white bg-red-500 px-3 py-1 rounded-lg hover:bg-red-600"
+            >
+              Cancel order
+            </button>
+          </div>
         </div>
         <h3 className="font-semibold text-lg mb-4">Products</h3>
         <div className="space-y-4">
-          {order.products.map((product) => (
+          {order.products?.map((product) => (
             <div
               key={product.product_id}
               className="flex flex-col sm:flex-row sm:items-center sm:justify-between border border-gray-300 rounded-lg p-4 bg-gray-50 gap-4"
             >
               <div className="flex items-center gap-4">
                 <img
-                  src={`data:image/jpeg;base64,${product.product_image}`}
+                  src={`data:image/jpeg;base64,${product.image}`}
                   alt={product.product_name}
                   className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded"
                 />
@@ -119,18 +91,18 @@ const AdminOrderDetails = () => {
                     {product.product_name}
                   </p>
                   <p className="text-xs sm:text-sm text-gray-500">
-                    Category: {product.p_category}
+                    Category: {product.category}
                   </p>
                   <p className="text-xs sm:text-sm text-gray-500">
-                    Discount: {product.p_discount}%
+                    Discount: {product.discount}%
                   </p>
                 </div>
               </div>
               <div className="text-left sm:text-right text-sm sm:text-base">
-                <p>Price: ₹{product.price}</p>
+                <p>Price: ₹{product.original_price}</p>
                 <p>Qty: {product.quantity}</p>
                 <p className="font-semibold">
-                  ₹{product.price * product.quantity}
+                  ₹{product.price_after_discount * product.quantity}
                 </p>
               </div>
             </div>
@@ -142,8 +114,18 @@ const AdminOrderDetails = () => {
           </h2>
         </div>
       </div>
+      {modal === "Cancel" && (
+        <ConfirmModal
+          title="Cancel Order"
+          message={`Are you sure you want to cancel Order #${order.order_id}?`}
+          confirmText="Cancel Order"
+          confirmColor="bg-red-600"
+          onConfirm={cancelOrder}
+          close={() => setModal(null)}
+        />
+      )}
     </div>
   );
 };
 
-export default AdminOrderDetails;
+export default Orderdetailedpage;

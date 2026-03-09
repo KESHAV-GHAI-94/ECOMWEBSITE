@@ -14,7 +14,7 @@ import {
 const AdminSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { profile } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const handleLogout = async () => {
     try {
       await Api.post("/logout");
@@ -70,14 +70,14 @@ const AdminSidebar = () => {
       <div className="px-4 py-4 border-t border-gray-800">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-9 h-9 rounded-full bg-gray-600 flex items-center justify-center text-white font-semibold">
-            {profile?.name ? profile.name.charAt(0).toUpperCase() : "A"}
+            {user?.name ? user.name.charAt(0).toUpperCase() : "A"}
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-semibold text-white">
-              {profile?.name || "Admin"}
+              {user?.name}
             </span>
             <span className="text-xs text-gray-400">
-              {profile?.email || "admin@email.com"}
+              {user?.email}
             </span>
           </div>
         </div>

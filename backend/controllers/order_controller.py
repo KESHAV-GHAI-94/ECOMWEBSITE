@@ -4,6 +4,7 @@ from models.cart_models import Cart
 from models.order_items_models import OrderItem
 from models.order_models import Order
 from models.product_models import Product
+import base64
 
 
 def checkout(user, db: Session):
@@ -79,12 +80,16 @@ def getdetailed_order(id: int, user, db: Session):
     )
     products = []
     for item, product in order_items:
+        image_base64 = None
+        if product.p_image:
+            image_base64 = base64.b64encode(product.p_image).decode("utf-8")
         products.append({
             "product_id": product.id,
             "product_name": product.p_name,
             "original_price": product.p_price,
             "discount": product.p_discount,
             "price_after_discount": item.price,
+            "image": image_base64,
             "quantity": item.quantity,
             "total_price": item.price * item.quantity
         })

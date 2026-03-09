@@ -104,7 +104,7 @@ export default function UseSignin() {
       if (res.data.role === "admin") {
         navigate("/dashboard");
       } else {
-        navigate("/shop");
+        navigate("/");
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "login failed");

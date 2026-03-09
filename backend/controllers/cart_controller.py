@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from models.cart_models import Cart
 from models.product_models import Product
+import base64
 
 
 def addtocart(data, user, db: Session):
@@ -78,6 +79,9 @@ def viewcart(user, db: Session):
         price_after_discount = round(
             product.p_price - (product.p_price * product.p_discount / 100), 2
         )
+        image_base64 = None
+        if product.p_image:
+            image_base64 = base64.b64encode(product.p_image).decode("utf-8")
         total_price = product.p_price * item.quantity
         total_after_discount = price_after_discount * item.quantity
         cart_total_price += total_price
@@ -91,6 +95,7 @@ def viewcart(user, db: Session):
             "price_after_discount": price_after_discount,
             "quantity": item.quantity,
             "total_price": total_price,
+            "product_image": image_base64,
             "total_after_discount": total_after_discount
         })
     return {
