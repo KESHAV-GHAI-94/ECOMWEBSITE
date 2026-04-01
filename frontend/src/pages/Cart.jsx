@@ -29,13 +29,11 @@ const Cart = () => {
   };
   const updateQuantity = async (product_id, quantity) => {
     if (quantity < 1) return;
-
     try {
       await Api.post("/cart/updatequantity-product", {
         product_id,
         quantity,
       });
-
       getCart();
     } catch (err) {
       console.log(err);
