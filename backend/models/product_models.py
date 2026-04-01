@@ -3,7 +3,7 @@ from config.db import Base
 
 
 class Product(Base):
-    __tablename__ = "products"
+    __tablename__ = "ecom_products"
     id = Column(Integer, index=True, primary_key=True)
     p_name = Column(String)
     p_description = Column(String)

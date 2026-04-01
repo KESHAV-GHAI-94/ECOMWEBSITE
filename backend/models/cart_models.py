@@ -3,7 +3,7 @@ from config.db import Base
 
 
 class Cart(Base):
-    __tablename__ = "cart"
+    __tablename__ = "ecom_cart"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))

@@ -3,7 +3,7 @@ from config.db import Base
 
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = "ecom_users"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     email = Column(String, unique=True)

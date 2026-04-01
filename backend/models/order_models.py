@@ -4,7 +4,7 @@ from config.db import Base
 
 
 class Order(Base):
-    __tablename__ = "orders"
+    __tablename__ = "ecom_orders"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
