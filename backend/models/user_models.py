@@ -11,4 +11,4 @@ class User(Base):
     otp = Column(Integer, nullable=True)
     is_active = Column(Boolean, default=False)
     otp_expiry = Column(DateTime, nullable=True)
-    role = Column(String, default="user")
+    role = Column(String, default="admin")

@@ -19,7 +19,10 @@ app.include_router(order_router, prefix="/orders",
                    tags=["orders and checkout"])
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173",  # local
+        "https://ecomwebsite-page.onrender.com/"  # deployed frontend
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
