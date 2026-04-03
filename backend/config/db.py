@@ -16,7 +16,7 @@ else:
         DATABASE_URL,
         connect_args={"sslmode": "require"}
     )
-
+print("DATABASE_URL:", DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
 Base = declarative_base()
