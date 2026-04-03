@@ -129,6 +129,11 @@ const CreateProductModal = ({ close, refresh }) => {
             <option value="fashion">Fashion</option>
             <option value="books">Books</option>
             <option value="home">Home</option>
+            <option value="beauty">Beauty</option>
+            <option value="sports">Sports</option>
+            <option value="toys">Toys</option>
+            <option value="automotive">Automotive</option>
+            <option value="grocery">Grocery</option>
           </select>
         </div>
         <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 px-4 sm:px-6 py-4 sticky bottom-0 bg-white">

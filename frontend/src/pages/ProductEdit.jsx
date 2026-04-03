@@ -184,6 +184,11 @@ const ProductEdit = () => {
                   <option value="fashion">Fashion</option>
                   <option value="books">Books</option>
                   <option value="home">Home</option>
+                  <option value="beauty">Beauty</option>
+                  <option value="sports">Sports</option>
+                  <option value="toys">Toys</option>
+                  <option value="automotive">Automotive</option>
+                  <option value="grocery">Grocery</option>
                 </select>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 pt-3">

@@ -46,6 +46,10 @@ async def create_product(
     admin,
     db: Session,
 ):
+    existing_product = db.query(Product).filter(Product.p_name == p_name).first()
+    if existing_product:
+        raise HTTPException(status_code=400, detail="Product with this name already exists")
+
     image_bytes = None
 
     if image:
