@@ -21,7 +21,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",  # local
-        "https://ecomwebsite-page.onrender.com/"  # deployed frontend
+        "https://ecomwebsite-page.onrender.com"  # deployed frontend
     ],
     allow_credentials=True,
     allow_methods=["*"],
