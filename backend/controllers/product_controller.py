@@ -1,16 +1,12 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, Response
 from sqlalchemy.orm import Session
 from models.product_models import Product
-import base64
 
 
 def viewproducts(db: Session):
     products = db.query(Product).all()
     product_list = []
     for product in products:
-        image_base64 = None
-        if product.p_image:
-            image_base64 = base64.b64encode(product.p_image).decode("utf-8")
         final_price = product.p_price - (
             product.p_price * product.p_discount / 100)
         product_list.append(
@@ -21,7 +17,7 @@ def viewproducts(db: Session):
                 "p_price": product.p_price,
                 "p_discount": product.p_discount,
                 "p_category": product.p_category,
-                "p_image": image_base64,
+                "p_image": None,
                 "price_after_discount": round(final_price, 2)
             }
         )
@@ -36,9 +32,7 @@ def viewproduct(id: int, db: Session):
     product = db.query(Product).filter(Product.id == id).first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
-    image_base64 = None
-    if product.p_image:
-        image_base64 = base64.b64encode(product.p_image).decode("utf-8")
+    
     final_price = product.p_price - (
         product.p_price * product.p_discount / 100)
 
@@ -51,9 +45,16 @@ def viewproduct(id: int, db: Session):
             "p_discount": product.p_discount,
             "p_category": product.p_category,
             "price_after_discount": round(final_price, 2),
-            "p_image": image_base64
+            "p_image": None
         }
     }
+
+
+def serve_product_image(id: int, db: Session):
+    product = db.query(Product).filter(Product.id == id).first()
+    if not product or not product.p_image:
+        raise HTTPException(status_code=404, detail="Image not found")
+    return Response(content=product.p_image, media_type="image/jpeg")
 
 
 def searchproduct(search: str, db: Session):
@@ -63,9 +64,6 @@ def searchproduct(search: str, db: Session):
     ).all()
     result = []
     for product in products:
-        image_base64 = None
-        if product.p_image:
-            image_base64 = base64.b64encode(product.p_image).decode("utf-8")
         final_price = product.p_price - (
             product.p_price * product.p_discount / 100)
         result.append({
@@ -76,7 +74,7 @@ def searchproduct(search: str, db: Session):
             "p_discount": product.p_discount,
             "p_category": product.p_category,
             "price_after_discount": round(final_price, 2),
-            "p_image": image_base64
+            "p_image": None
         })
     return {
         "search": search,
@@ -88,9 +86,6 @@ def filterproduct(category: str, db: Session):
     products = db.query(Product).filter(Product.p_category == category).all()
     result = []
     for product in products:
-        image_base64 = None
-        if product.p_image:
-            image_base64 = base64.b64encode(product.p_image).decode("utf-8")
         final_price = product.p_price - (
             product.p_price * product.p_discount / 100)
         result.append({
@@ -101,7 +96,7 @@ def filterproduct(category: str, db: Session):
             "p_discount": product.p_discount,
             "p_category": product.p_category,
             "price_after_discount": round(final_price, 2),
-            "p_image": image_base64
+            "p_image": None
         })
     return {
         "category": category,

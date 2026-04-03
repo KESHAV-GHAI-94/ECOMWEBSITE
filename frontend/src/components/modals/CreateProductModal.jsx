@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 
 const CreateProductModal = ({ close, refresh }) => {
   const [preview, setPreview] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const handleImage = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -27,14 +28,21 @@ const CreateProductModal = ({ close, refresh }) => {
       return toast.error("Discount cannot exceed 100%");
     }
     const data = new FormData(form);
+    console.log("Form validated. Submitting payload for:", name);
+    setIsLoading(true);
     try {
-      await Api.post("/admin/create-product", data);
+      console.log("Sending POST request to /admin/create-product");
+      const res = await Api.post("/admin/create-product", data);
+      console.log("Response successful:", res.data);
       toast.success("Product created successfully");
       refresh();
       close();
     } catch (err) {
-      toast.error("Failed to create product");
-      console.log(err);
+      console.error("Error creating product:", err);
+      console.log("Error response data:", err.response?.data);
+      toast.error(err.response?.data?.detail || "Failed to create product");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -146,9 +154,12 @@ const CreateProductModal = ({ close, refresh }) => {
           </button>
           <button
             type="submit"
-            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm sm:text-base"
+            disabled={isLoading}
+            className={`w-full sm:w-auto px-5 py-2 rounded-lg text-sm sm:text-base text-white transition-colors ${
+              isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+            }`}
           >
-            Create Product
+            {isLoading ? "Creating..." : "Create Product"}
           </button>
         </div>
       </form>

@@ -10,6 +10,7 @@ const Shop = () => {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [category, setCategory] = useState("");
+  const [loading, setLoading] = useState(false);
   const {user}= useContext(AuthContext)
   const productsPerPage = 8;
   const indexOfLast = currentPage * productsPerPage;
@@ -18,20 +19,26 @@ const Shop = () => {
   const totalPages = Math.ceil(products.length / productsPerPage);
   const navigate = useNavigate();
   const getProducts = async () => {
+    setLoading(true);
     try {
       const res = await Api.get("/products");
       setProducts(res.data.products);
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const searchProducts = async () => {
+    setLoading(true);
     try {
       const res = await Api.get(`/product/search?search=${search}`);
       setProducts(res.data.results);
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 const AddtoProduct = async (productId) =>{
@@ -48,11 +55,14 @@ const AddtoProduct = async (productId) =>{
   }
 }
   const filterCategory = async (category) => {
+    setLoading(true);
     try {
       const res = await Api.get(`/filter/products/${category}`);
       setProducts(res.data.products);
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -108,55 +118,74 @@ const AddtoProduct = async (productId) =>{
           </select>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
-        {currentProducts.map((product) => (
-          <div
-            key={product.id}
-            className="bg-white rounded-xl shadow-sm hover:shadow-xl transition cursor-pointer group"
-            onClick={() => navigate(`/productdetail/${product.id}`)}
-          >
-            <div className="relative overflow-hidden rounded-t-xl">
-              {product.p_discount > 0 && (
-                <span className="absolute top-3 left-3 bg-red-500 text-white text-xs px-3 py-1 rounded-full z-10">
-                  {product.p_discount}% OFF
-                </span>
-              )}
-              <img
-                src={`data:image/jpeg;base64,${product.p_image}`}
-                alt={product.p_name}
-                className="h-44 sm:h-48 md:h-52 border-b border-gray-200 w-full object-cover group-hover:scale-105 transition"
-              />
-            </div>
-            <div className="p-4">
-              <h3 className="font-semibold text-sm sm:text-base text-gray-800 line-clamp-1">
-                {product.p_name}
-              </h3>
-              <p className="text-xs sm:text-sm text-gray-500">{product.p_category}</p>
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-blue-600 text-base sm:text-lg font-bold">
-                  ₹{product.price_after_discount}
-                </span>
-                {product.p_discount > 0 && (
-                  <span className="line-through text-gray-400 text-sm">
-                    ₹{product.p_price}
-                  </span>
-                )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
+          {loading ? (
+            Array.from({ length: 8 }).map((_, idx) => (
+              <div key={idx} className="bg-white rounded-xl shadow-sm overflow-hidden animate-pulse">
+                <div className="h-44 sm:h-48 md:h-52 w-full bg-gray-200"></div>
+                <div className="p-4">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2 mb-4"></div>
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className="h-5 bg-gray-200 rounded w-1/3"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                  </div>
+                  {user && (
+                    <div className="mt-3 sm:mt-4 h-10 bg-gray-200 rounded-lg w-full"></div>
+                  )}
+                </div>
               </div>
-              {user &&(
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  AddtoProduct(product.id);
-                }}
-                className="mt-3 sm:mt-4 w-full bg-blue-600 text-white py-2 sm:py-2.5 text-sm sm:text-base rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 transition"
+            ))
+          ) : (
+            currentProducts.map((product) => (
+              <div
+                key={product.id}
+                className="bg-white rounded-xl shadow-sm hover:shadow-xl transition cursor-pointer group"
+                onClick={() => navigate(`/productdetail/${product.id}`)}
               >
-                <ShoppingCart size={16} />
-                Add to Cart
-              </button>)}
-            </div>
-          </div>
-        ))}
-      </div>
+                <div className="relative overflow-hidden rounded-t-xl">
+                  {product.p_discount > 0 && (
+                    <span className="absolute top-3 left-3 bg-red-500 text-white text-xs px-3 py-1 rounded-full z-10">
+                      {product.p_discount}% OFF
+                    </span>
+                  )}
+                  <img
+                    src={`${Api.defaults.baseURL}/product/image/${product.id}`}
+                    alt={product.p_name}
+                    className="h-44 sm:h-48 md:h-52 border-b border-gray-200 w-full object-cover group-hover:scale-105 transition"
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-sm sm:text-base text-gray-800 line-clamp-1">
+                    {product.p_name}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-gray-500">{product.p_category}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-blue-600 text-base sm:text-lg font-bold">
+                      ₹{product.price_after_discount}
+                    </span>
+                    {product.p_discount > 0 && (
+                      <span className="line-through text-gray-400 text-sm">
+                        ₹{product.p_price}
+                      </span>
+                    )}
+                  </div>
+                  {user &&(
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      AddtoProduct(product.id);
+                    }}
+                    className="mt-3 sm:mt-4 w-full bg-blue-600 text-white py-2 sm:py-2.5 text-sm sm:text-base rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 transition"
+                  >
+                    <ShoppingCart size={16} />
+                    Add to Cart
+                  </button>)}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       {totalPages > 1 && (
         <div className="flex justify-center mt-12 gap-3 flex-wrap">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (

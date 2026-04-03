@@ -7,6 +7,7 @@ const ProductEdit = () => {
   const [modal, setModal] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [product, setProduct] = useState({
     p_name: "",
     p_description: "",
@@ -18,6 +19,7 @@ const ProductEdit = () => {
   const [preview, setPreview] = useState(null);
   const placeholder = "https://placehold.co/400x300?text=No+Image";
   const loadProduct = async () => {
+    setLoading(true);
     try {
       const res = await Api.get(`/view-product/${id}`);
       const data = res.data?.product || {};
@@ -28,13 +30,11 @@ const ProductEdit = () => {
         p_discount: data.p_discount ?? "",
         p_category: data.p_category ?? "",
       });
-      if (data.p_image) {
-        setPreview(`data:image/*;base64,${data.p_image}`);
-      } else {
-        setPreview(null);
-      }
+      setPreview(`${Api.defaults.baseURL}/product/image/${id}`);
     } catch {
       toast.error("Failed to load product");
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -117,6 +117,25 @@ const ProductEdit = () => {
             Back
           </button>
         </div>
+
+        {loading ? (
+          <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 md:p-10 animate-pulse">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+               <div className="space-y-4 sm:space-y-5 order-2 md:order-1">
+                 <div className="h-10 bg-gray-200 rounded-lg w-full"></div>
+                 <div className="h-24 bg-gray-200 rounded-lg w-full"></div>
+                 <div className="grid grid-cols-2 gap-4">
+                   <div className="h-10 bg-gray-200 rounded-lg w-full"></div>
+                   <div className="h-10 bg-gray-200 rounded-lg w-full"></div>
+                 </div>
+                 <div className="h-10 bg-gray-200 rounded-lg w-full"></div>
+               </div>
+               <div className="order-1 md:order-2 flex flex-col items-center md:items-start">
+                   <div className="w-full max-w-sm aspect-[2] bg-gray-200 rounded-lg"></div>
+               </div>
+             </div>
+          </div>
+        ) : (
         <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 md:p-10">
           <form className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
             <div className="space-y-4 sm:space-y-5 order-2 md:order-1 ">
@@ -217,6 +236,7 @@ const ProductEdit = () => {
                   src={preview || placeholder}
                   alt="product"
                   className="w-full h-full object-cover"
+                  onError={(e) => { e.target.src = placeholder; }}
                 />
               </div>
               <div className="space-y-2 w-full max-w-sm">
@@ -243,6 +263,7 @@ const ProductEdit = () => {
             </div>
           </form>
         </div>
+        )}
       </div>
       {modal === "update" && (
         <ConfirmModal

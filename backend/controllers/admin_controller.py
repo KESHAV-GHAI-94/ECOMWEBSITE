@@ -12,9 +12,6 @@ def viewproducts(admin, db: Session):
     products = db.query(Product).all()
     product_list = []
     for product in products:
-        image_base64 = None
-        if product.p_image:
-            image_base64 = base64.b64encode(product.p_image).decode("utf-8")
         final_price = product.p_price - (
             product.p_price * product.p_discount / 100)
         product_list.append(
@@ -25,7 +22,7 @@ def viewproducts(admin, db: Session):
                 "p_price": product.p_price,
                 "p_discount": product.p_discount,
                 "p_category": product.p_category,
-                "p_image": image_base64,
+                "p_image": None,
                 "price_after_discount": round(final_price, 2)
             }
         )
@@ -198,13 +195,10 @@ def get_order_details(order_id: int, admin, db: Session):
     )
     products = []
     for item, product in order_items:
-        image_base64 = None
-        if product.p_image:
-            image_base64 = base64.b64encode(product.p_image).decode("utf-8")
         products.append({
             "product_id": product.id,
             "product_name": product.p_name,
-            "product_image": image_base64,
+            "product_image": None,
             "p_discount": product.p_discount,
             "p_category": product.p_category,
             "price": item.price,

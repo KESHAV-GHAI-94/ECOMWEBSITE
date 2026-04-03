@@ -5,9 +5,14 @@ from controllers.product_controller import (
     viewproducts,
     viewproduct,
     searchproduct,
-    filterproduct
+    filterproduct,
+    serve_product_image
 )
 router = APIRouter()
+
+@router.get("/product/image/{id}")
+def get_product_image(id: int, db: Session = Depends(get_db)):
+    return serve_product_image(id, db)
 
 
 @router.get("/products")

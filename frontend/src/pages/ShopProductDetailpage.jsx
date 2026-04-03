@@ -40,8 +40,35 @@ const AddtoProduct = async () =>{
   }, [id]);
   if (!product) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-lg">Loading product...</p>
+      <div className="bg-gray-100 min-h-[calc(100vh-64px)] px-4 sm:px-6 md:px-12 lg:px-16 py-6 md:py-8 animate-pulse">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+          <div className="h-6 sm:h-8 w-1/3 bg-gray-300 rounded"></div>
+          <div className="h-8 w-20 bg-gray-300 rounded-lg"></div>
+        </div>
+        <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 md:p-10 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+          <div className="space-y-4">
+             <div className="bg-gray-200 rounded-xl h-[220px] sm:h-[260px] md:h-[380px] w-full"></div>
+             <div className="h-12 bg-gray-200 rounded-lg w-full"></div>
+          </div>
+          <div className="flex flex-col gap-4">
+             <div className="h-8 md:h-10 bg-gray-200 rounded w-3/4"></div>
+             <div className="h-5 bg-gray-200 rounded w-1/3"></div>
+             <div className="h-10 bg-gray-200 rounded w-1/2"></div>
+             <div className="space-y-3 mt-4">
+               <div className="h-6 bg-gray-200 rounded w-1/4 mb-2"></div>
+               <div className="h-4 bg-gray-200 rounded w-full"></div>
+               <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+             </div>
+             <div className="flex items-center gap-3 mt-4">
+               <div className="h-6 w-16 bg-gray-200 rounded"></div>
+               <div className="h-10 w-24 bg-gray-200 rounded"></div>
+             </div>
+             <div className="flex gap-3 pt-3">
+                <div className="h-12 bg-gray-200 rounded-lg flex-1"></div>
+                <div className="h-12 bg-gray-200 rounded-lg flex-1"></div>
+             </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -68,7 +95,7 @@ const AddtoProduct = async () =>{
               </span>
             )}
             <img
-              src={`data:image/jpeg;base64,${product.p_image}`}
+              src={`${Api.defaults.baseURL}/product/image/${product.id}`}
               alt={product.p_name}
               className="max-h-[180px] sm:max-h-[220px] md:max-h-[320px] object-contain"
             />

@@ -9,9 +9,12 @@ const AdminProducts = () => {
   const [category, setCategory] = useState("");
   const [createModal, setCreateModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
   const productsPerPage = 8;
   const placeholder = "https://placehold.co/400x300?text=No+Image";
   const fetchProducts = async () => {
+    setLoading(true);
+    try {
     if (!category) {
       const res = await Api.get("/admin/products");
       setProducts(res.data.products);
@@ -20,6 +23,9 @@ const AdminProducts = () => {
       setProducts(res.data.products);
     }
     setCurrentPage(1);
+    } finally {
+      setLoading(false);
+    }
   };
   useEffect(() => {
     fetchProducts();
@@ -30,9 +36,14 @@ const AdminProducts = () => {
       fetchProducts();
       return;
     }
-    const res = await Api.get(`/product/search?search=${search}`);
-    setProducts(res.data.results);
-    setCurrentPage(1);
+    setLoading(true);
+    try {
+      const res = await Api.get(`/product/search?search=${search}`);
+      setProducts(res.data.results);
+      setCurrentPage(1);
+    } finally {
+      setLoading(false);
+    }
   };
   const handleFilter = (cat) => {
     setCategory(cat);
@@ -81,14 +92,35 @@ const AdminProducts = () => {
             <option value="fashion">Fashion</option>
             <option value="books">Books</option>
             <option value="home">Home</option>
+            <option value="beauty">Beauty</option>
+            <option value="sports">Sports</option>
+            <option value="toys">Toys</option>
+            <option value="automotive">Automotive</option>
+            <option value="grocery">Grocery</option>
           </select>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {currentProducts.map((product) => {
-            const image = product.p_image
-              ? `data:image/*;base64,${product.p_image}`
-              : placeholder;
-            return (
+          {loading ? (
+            Array.from({ length: 8 }).map((_, idx) => (
+              <div key={idx} className="bg-white rounded-2xl shadow-sm overflow-hidden animate-pulse">
+                <div className="h-44 sm:h-48 md:h-52 w-full bg-gray-200"></div>
+                <div className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                  </div>
+                  <div className="space-y-2 mt-2">
+                    <div className="h-3 bg-gray-200 rounded w-full"></div>
+                    <div className="h-3 bg-gray-200 rounded w-5/6"></div>
+                  </div>
+                  <div className="h-5 bg-gray-200 rounded w-1/3 mt-4"></div>
+                </div>
+              </div>
+            ))
+          ) : (
+            currentProducts.map((product) => {
+              const image = `${Api.defaults.baseURL}/product/image/${product.id}`;
+              return (
               <Link key={product.id} to={`/product/${product.id}`}>
                 <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition duration-300 overflow-hidden group">
                   <div className="h-44 sm:h-48 md:h-52 w-full bg-gray-100 overflow-hidden">
@@ -138,7 +170,8 @@ const AdminProducts = () => {
                 </div>
               </Link>
             );
-          })}
+          })
+        )}
         </div>
         {totalPages > 1 && (
           <div className="flex flex-wrap justify-center gap-2 pt-4">
