@@ -5,8 +5,14 @@ from models.product_models import Product
 from models.order_models import Order
 from models.order_items_models import OrderItem
 from models.user_models import User
-import base64
+import cloudinary
+import cloudinary.uploader
 
+cloudinary.config(
+    cloud_name="dkgtjamhz",
+    api_key="167617284638242",
+    api_secret="FUPPw7eeIpKSA-LpJtuZHVUZ1kQ"
+)
 
 def viewproducts(admin, db: Session):
     products = db.query(Product).all()
@@ -22,7 +28,7 @@ def viewproducts(admin, db: Session):
                 "p_price": product.p_price,
                 "p_discount": product.p_discount,
                 "p_category": product.p_category,
-                "p_image": None,
+                "p_image": product.p_image,
                 "price_after_discount": round(final_price, 2)
             }
         )
@@ -47,10 +53,10 @@ async def create_product(
     if existing_product:
         raise HTTPException(status_code=400, detail="Product with this name already exists")
 
-    image_bytes = None
-
+    image_url = None
     if image:
-        image_bytes = await image.read()
+        upload_result = cloudinary.uploader.upload(image.file)
+        image_url = upload_result.get("secure_url")
 
     new_product = Product(
         p_name=p_name,
@@ -58,17 +64,12 @@ async def create_product(
         p_price=p_price,
         p_discount=p_discount,
         p_category=p_category,
-        p_image=image_bytes,
+        p_image=image_url,
     )
 
     db.add(new_product)
     db.commit()
     db.refresh(new_product)
-
-    image_base64 = None
-
-    if new_product.p_image:
-        image_base64 = base64.b64encode(new_product.p_image).decode("utf-8")
 
     return {
         "message": "Product created successfully",
@@ -80,7 +81,7 @@ async def create_product(
             "p_price": new_product.p_price,
             "p_discount": new_product.p_discount,
             "p_category": new_product.p_category,
-            "p_image": image_base64,
+            "p_image": new_product.p_image,
         },
     }
 
@@ -118,13 +119,11 @@ async def update_product(
     db_product.p_discount = p_discount
     db_product.p_category = p_category
     if image:
-        image_bytes = await image.read()
-        db_product.p_image = image_bytes
+        upload_result = cloudinary.uploader.upload(image.file)
+        db_product.p_image = upload_result.get("secure_url")
     db.commit()
     db.refresh(db_product)
-    image_base64 = None
-    if db_product.p_image:
-        image_base64 = base64.b64encode(db_product.p_image).decode("utf-8")
+    
     return {
         "message": "product updated successfully",
         "updated_by_admin": admin["user_id"],
@@ -135,7 +134,7 @@ async def update_product(
             "p_price": db_product.p_price,
             "p_discount": db_product.p_discount,
             "p_category": db_product.p_category,
-            "p_image": image_base64,
+            "p_image": db_product.p_image,
         },
     }
 
@@ -198,7 +197,7 @@ def get_order_details(order_id: int, admin, db: Session):
         products.append({
             "product_id": product.id,
             "product_name": product.p_name,
-            "product_image": None,
+            "product_image": product.p_image,
             "p_discount": product.p_discount,
             "p_category": product.p_category,
             "price": item.price,

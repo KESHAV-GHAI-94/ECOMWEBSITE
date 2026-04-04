@@ -119,7 +119,7 @@ const AdminProducts = () => {
             ))
           ) : (
             currentProducts.map((product) => {
-              const image = `${Api.defaults.baseURL}/product/image/${product.id}`;
+              const image = product.p_image;
               return (
               <Link key={product.id} to={`/product/${product.id}`}>
                 <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition duration-300 overflow-hidden group">

@@ -86,7 +86,7 @@ def getdetailed_order(id: int, user, db: Session):
             "original_price": product.p_price,
             "discount": product.p_discount,
             "price_after_discount": item.price,
-            "image": None,
+            "image": product.p_image,
             "quantity": item.quantity,
             "total_price": item.price * item.quantity
         })

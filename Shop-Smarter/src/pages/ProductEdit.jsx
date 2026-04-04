@@ -30,7 +30,7 @@ const ProductEdit = () => {
         p_discount: data.p_discount ?? "",
         p_category: data.p_category ?? "",
       });
-      setPreview(`${Api.defaults.baseURL}/product/image/${id}`);
+      setPreview(data.p_image);
     } catch {
       toast.error("Failed to load product");
     } finally {

@@ -150,7 +150,7 @@ const AddtoProduct = async (productId) =>{
                     </span>
                   )}
                   <img
-                    src={`${Api.defaults.baseURL}/product/image/${product.id}`}
+                    src={product.p_image}
                     alt={product.p_name}
                     className="h-44 sm:h-48 md:h-52 border-b border-gray-200 w-full object-cover group-hover:scale-105 transition"
                   />

@@ -17,7 +17,7 @@ def viewproducts(db: Session):
                 "p_price": product.p_price,
                 "p_discount": product.p_discount,
                 "p_category": product.p_category,
-                "p_image": None,
+                "p_image": product.p_image,
                 "price_after_discount": round(final_price, 2)
             }
         )
@@ -45,16 +45,9 @@ def viewproduct(id: int, db: Session):
             "p_discount": product.p_discount,
             "p_category": product.p_category,
             "price_after_discount": round(final_price, 2),
-            "p_image": None
+            "p_image": product.p_image
         }
     }
-
-
-def serve_product_image(id: int, db: Session):
-    product = db.query(Product).filter(Product.id == id).first()
-    if not product or not product.p_image:
-        raise HTTPException(status_code=404, detail="Image not found")
-    return Response(content=product.p_image, media_type="image/jpeg")
 
 
 def searchproduct(search: str, db: Session):
@@ -74,7 +67,7 @@ def searchproduct(search: str, db: Session):
             "p_discount": product.p_discount,
             "p_category": product.p_category,
             "price_after_discount": round(final_price, 2),
-            "p_image": None
+            "p_image": product.p_image
         })
     return {
         "search": search,
@@ -96,7 +89,7 @@ def filterproduct(category: str, db: Session):
             "p_discount": product.p_discount,
             "p_category": product.p_category,
             "price_after_discount": round(final_price, 2),
-            "p_image": None
+            "p_image": product.p_image
         })
     return {
         "category": category,

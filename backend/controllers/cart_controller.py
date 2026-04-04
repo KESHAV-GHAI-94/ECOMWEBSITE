@@ -92,7 +92,7 @@ def viewcart(user, db: Session):
             "price_after_discount": price_after_discount,
             "quantity": item.quantity,
             "total_price": total_price,
-            "product_image": None,
+            "product_image": product.p_image,
             "total_after_discount": total_after_discount
         })
     return {
