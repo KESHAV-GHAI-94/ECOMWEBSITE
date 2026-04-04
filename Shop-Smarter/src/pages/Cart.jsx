@@ -92,10 +92,10 @@ const Cart = () => {
               <div className="flex gap-4">
                 <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
                   <img
-                    src={item.product_image}
+                    src={item.product_image || "https://placehold.co/400x300?text=No+Image"}
                     alt={item.product_name}
                     className="w-full h-full object-contain"
-                    onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
+                    onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/400x300?text=No+Image"; }}
                   />
                   <span className="text-xs text-gray-400 hidden">No Image</span>
                 </div>

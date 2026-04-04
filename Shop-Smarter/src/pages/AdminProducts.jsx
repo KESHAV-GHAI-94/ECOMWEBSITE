@@ -119,7 +119,7 @@ const AdminProducts = () => {
             ))
           ) : (
             currentProducts.map((product) => {
-              const image = product.p_image;
+              const image = product.p_image || placeholder;
               return (
               <Link key={product.id} to={`/product/${product.id}`}>
                 <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition duration-300 overflow-hidden group">
@@ -127,7 +127,7 @@ const AdminProducts = () => {
                     <img
                       src={image}
                       alt={product.p_name}
-                      onError={(e) => (e.target.src = placeholder)}
+                      onError={(e) => { e.target.onerror = null; e.target.src = placeholder; }}
                       className="h-full w-full object-cover group-hover:scale-105 transition duration-300"
                     />
                   </div>

@@ -150,8 +150,9 @@ const AddtoProduct = async (productId) =>{
                     </span>
                   )}
                   <img
-                    src={product.p_image}
+                    src={product.p_image || "https://placehold.co/400x300?text=No+Image"}
                     alt={product.p_name}
+                    onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/400x300?text=No+Image"; }}
                     className="h-44 sm:h-48 md:h-52 border-b border-gray-200 w-full object-cover group-hover:scale-105 transition"
                   />
                 </div>

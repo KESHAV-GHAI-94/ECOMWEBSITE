@@ -98,10 +98,10 @@ const Orderdetailedpage = () => {
             >
               <div className="flex items-center gap-4">
                 <img
-                  src={product.image}
+                  src={product.image || "https://placehold.co/400x300?text=No+Image"}
                   alt={product.product_name}
                   className="w-14 h-14 sm:w-16 sm:h-16 md:w-18 md:h-18 object-cover rounded-lg"
-                  onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
+                  onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/400x300?text=No+Image"; }}
                 />
                 <span className="text-xs text-gray-400 hidden">No Image</span>
                 <div>
