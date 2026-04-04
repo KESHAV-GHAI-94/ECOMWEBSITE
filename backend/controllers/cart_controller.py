@@ -85,6 +85,12 @@ def viewcart(user, db: Session):
         cart_total_after_discount += total_after_discount
         total_items += item.quantity
         img_val = product.p_image
+        if isinstance(img_val, bytes):
+            try:
+                img_val = img_val.decode('utf-8')
+            except UnicodeDecodeError:
+                img_val = None
+
         if not isinstance(img_val, str) or not img_val.startswith("http"):
             img_val = None
 

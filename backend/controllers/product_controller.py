@@ -10,6 +10,12 @@ def viewproducts(db: Session):
         final_price = product.p_price - (
             product.p_price * product.p_discount / 100)
         img_val = product.p_image
+        if isinstance(img_val, bytes):
+            try:
+                img_val = img_val.decode('utf-8')
+            except UnicodeDecodeError:
+                img_val = None
+
         if not isinstance(img_val, str) or not img_val.startswith("http"):
             img_val = None
         
@@ -68,6 +74,12 @@ def searchproduct(search: str, db: Session):
         final_price = product.p_price - (
             product.p_price * product.p_discount / 100)
         img_val = product.p_image
+        if isinstance(img_val, bytes):
+            try:
+                img_val = img_val.decode('utf-8')
+            except UnicodeDecodeError:
+                img_val = None
+
         if not isinstance(img_val, str) or not img_val.startswith("http"):
             img_val = None
             
@@ -94,6 +106,12 @@ def filterproduct(category: str, db: Session):
         final_price = product.p_price - (
             product.p_price * product.p_discount / 100)
         img_val = product.p_image
+        if isinstance(img_val, bytes):
+            try:
+                img_val = img_val.decode('utf-8')
+            except UnicodeDecodeError:
+                img_val = None
+
         if not isinstance(img_val, str) or not img_val.startswith("http"):
             img_val = None
             
