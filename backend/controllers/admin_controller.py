@@ -64,9 +64,18 @@ async def create_product(
         raise HTTPException(status_code=400, detail="Product with this name already exists")
 
     image_url = None
+    print(f"DEBUG CREATE PRODUCT: image={image}")
+    if image:
+        print(f"DEBUG CREATE PRODUCT: filename={getattr(image, 'filename', 'NO_FILENAME')}")
     if image and hasattr(image, "filename") and image.filename:
-        upload_result = cloudinary.uploader.upload(image.file)
-        image_url = upload_result.get("secure_url")
+        print("DEBUG CREATE PRODUCT: Attempting to upload image...")
+        try:
+            upload_result = cloudinary.uploader.upload(image.file)
+            print(f"DEBUG CREATE PRODUCT: Upload result: {upload_result}")
+            image_url = upload_result.get("secure_url")
+        except Exception as e:
+            print(f"DEBUG CREATE PRODUCT: Upload Failed! {e}")
+            raise e
 
     new_product = Product(
         p_name=p_name,
