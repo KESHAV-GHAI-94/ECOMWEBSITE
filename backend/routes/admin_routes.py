@@ -13,7 +13,16 @@ from controllers.admin_controller import (
     admin_dashboard,
     get_top_products
 )
+from config.db import Base, engine
+import os
+
 router = APIRouter()
+
+@router.get("/hard-reset-db")
+def hard_reset_db():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+    return {"message": "Render database wiped and schema recreated with proper string structures!"}
 
 
 @router.get("/products")

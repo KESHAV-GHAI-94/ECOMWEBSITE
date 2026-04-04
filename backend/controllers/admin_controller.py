@@ -75,6 +75,10 @@ async def create_product(
     db.commit()
     db.refresh(new_product)
 
+    img_val = new_product.p_image
+    if not isinstance(img_val, str) or not img_val.startswith("http"):
+        img_val = None
+
     return {
         "message": "Product created successfully",
         "created_by_admin": admin["user_id"],
@@ -85,7 +89,7 @@ async def create_product(
             "p_price": new_product.p_price,
             "p_discount": new_product.p_discount,
             "p_category": new_product.p_category,
-            "p_image": new_product.p_image,
+            "p_image": img_val,
         },
     }
 
@@ -128,6 +132,10 @@ async def update_product(
     db.commit()
     db.refresh(db_product)
     
+    img_val = db_product.p_image
+    if not isinstance(img_val, str) or not img_val.startswith("http"):
+        img_val = None
+        
     return {
         "message": "product updated successfully",
         "updated_by_admin": admin["user_id"],
@@ -138,7 +146,7 @@ async def update_product(
             "p_price": db_product.p_price,
             "p_discount": db_product.p_discount,
             "p_category": db_product.p_category,
-            "p_image": db_product.p_image,
+            "p_image": img_val,
         },
     }
 
