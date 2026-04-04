@@ -84,6 +84,10 @@ def viewcart(user, db: Session):
         cart_total_price += total_price
         cart_total_after_discount += total_after_discount
         total_items += item.quantity
+        img_val = product.p_image
+        if isinstance(img_val, bytes):
+            img_val = None
+
         result.append({
             "product_id": product.id,
             "product_name": product.p_name,
@@ -92,7 +96,7 @@ def viewcart(user, db: Session):
             "price_after_discount": price_after_discount,
             "quantity": item.quantity,
             "total_price": total_price,
-            "product_image": product.p_image,
+            "product_image": img_val,
             "total_after_discount": total_after_discount
         })
     return {

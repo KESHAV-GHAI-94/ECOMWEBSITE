@@ -9,6 +9,10 @@ def viewproducts(db: Session):
     for product in products:
         final_price = product.p_price - (
             product.p_price * product.p_discount / 100)
+        img_val = product.p_image
+        if isinstance(img_val, bytes):
+            img_val = None
+        
         product_list.append(
             {
                 "id": product.id,
@@ -17,7 +21,7 @@ def viewproducts(db: Session):
                 "p_price": product.p_price,
                 "p_discount": product.p_discount,
                 "p_category": product.p_category,
-                "p_image": product.p_image,
+                "p_image": img_val,
                 "price_after_discount": round(final_price, 2)
             }
         )
@@ -36,6 +40,10 @@ def viewproduct(id: int, db: Session):
     final_price = product.p_price - (
         product.p_price * product.p_discount / 100)
 
+    img_val = product.p_image
+    if isinstance(img_val, bytes):
+        img_val = None
+
     return {
         "product": {
             "id": product.id,
@@ -45,7 +53,7 @@ def viewproduct(id: int, db: Session):
             "p_discount": product.p_discount,
             "p_category": product.p_category,
             "price_after_discount": round(final_price, 2),
-            "p_image": product.p_image
+            "p_image": img_val
         }
     }
 
