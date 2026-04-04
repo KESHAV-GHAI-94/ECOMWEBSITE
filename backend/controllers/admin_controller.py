@@ -65,8 +65,7 @@ async def create_product(
 
     image_url = None
     if image and hasattr(image, "filename") and image.filename:
-        file_bytes = await image.read()
-        upload_result = cloudinary.uploader.upload(file_bytes)
+        upload_result = cloudinary.uploader.upload(image.file)
         image_url = upload_result.get("secure_url")
 
     new_product = Product(
@@ -134,8 +133,7 @@ async def update_product(
     db_product.p_discount = p_discount
     db_product.p_category = p_category
     if image and hasattr(image, "filename") and image.filename:
-        file_bytes = await image.read()
-        upload_result = cloudinary.uploader.upload(file_bytes)
+        upload_result = cloudinary.uploader.upload(image.file)
         db_product.p_image = upload_result.get("secure_url")
     db.commit()
     db.refresh(db_product)
