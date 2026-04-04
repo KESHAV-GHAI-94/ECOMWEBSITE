@@ -10,7 +10,7 @@ def viewproducts(db: Session):
         final_price = product.p_price - (
             product.p_price * product.p_discount / 100)
         img_val = product.p_image
-        if isinstance(img_val, bytes):
+        if not isinstance(img_val, str) or not img_val.startswith("http"):
             img_val = None
         
         product_list.append(
@@ -41,7 +41,7 @@ def viewproduct(id: int, db: Session):
         product.p_price * product.p_discount / 100)
 
     img_val = product.p_image
-    if isinstance(img_val, bytes):
+    if not isinstance(img_val, str) or not img_val.startswith("http"):
         img_val = None
 
     return {
@@ -67,6 +67,10 @@ def searchproduct(search: str, db: Session):
     for product in products:
         final_price = product.p_price - (
             product.p_price * product.p_discount / 100)
+        img_val = product.p_image
+        if not isinstance(img_val, str) or not img_val.startswith("http"):
+            img_val = None
+            
         result.append({
             "id": product.id,
             "p_name": product.p_name,
@@ -75,7 +79,7 @@ def searchproduct(search: str, db: Session):
             "p_discount": product.p_discount,
             "p_category": product.p_category,
             "price_after_discount": round(final_price, 2),
-            "p_image": product.p_image
+            "p_image": img_val
         })
     return {
         "search": search,
@@ -89,6 +93,10 @@ def filterproduct(category: str, db: Session):
     for product in products:
         final_price = product.p_price - (
             product.p_price * product.p_discount / 100)
+        img_val = product.p_image
+        if not isinstance(img_val, str) or not img_val.startswith("http"):
+            img_val = None
+            
         result.append({
             "id": product.id,
             "p_name": product.p_name,
@@ -97,7 +105,7 @@ def filterproduct(category: str, db: Session):
             "p_discount": product.p_discount,
             "p_category": product.p_category,
             "price_after_discount": round(final_price, 2),
-            "p_image": product.p_image
+            "p_image": img_val
         })
     return {
         "category": category,

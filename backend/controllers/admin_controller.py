@@ -21,7 +21,7 @@ def viewproducts(admin, db: Session):
         final_price = product.p_price - (
             product.p_price * product.p_discount / 100)
         img_val = product.p_image
-        if isinstance(img_val, bytes):
+        if not isinstance(img_val, str) or not img_val.startswith("http"):
             img_val = None
 
         product_list.append(
@@ -199,7 +199,7 @@ def get_order_details(order_id: int, admin, db: Session):
     products = []
     for item, product in order_items:
         img_val = product.p_image
-        if isinstance(img_val, bytes):
+        if not isinstance(img_val, str) or not img_val.startswith("http"):
             img_val = None
         products.append({
             "product_id": product.id,

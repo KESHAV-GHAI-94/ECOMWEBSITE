@@ -85,7 +85,7 @@ def viewcart(user, db: Session):
         cart_total_after_discount += total_after_discount
         total_items += item.quantity
         img_val = product.p_image
-        if isinstance(img_val, bytes):
+        if not isinstance(img_val, str) or not img_val.startswith("http"):
             img_val = None
 
         result.append({
