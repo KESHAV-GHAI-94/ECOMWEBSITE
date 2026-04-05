@@ -89,7 +89,7 @@ const Home = () => {
                   </span>
                 )}
                 <img
-                  src={`data:image/jpeg;base64,${product.p_image}`}
+                  src={product.p_image || "https://placehold.co/400x300?text=No+Image"}
                   alt={product.p_name}
                   className="h-48 w-full object-cover"
                 />
