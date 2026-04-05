@@ -4,8 +4,13 @@ from models.user_models import User
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 import random
+import os
+from dotenv import load_dotenv
 from utils.jwt_handler import create_access_token
 from utils.send_email import send_otp_email
+
+load_dotenv()
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "keshavghai94@gmail.com")
 
 pwd = CryptContext(schemes=["argon2"], deprecated="auto")
 
@@ -26,6 +31,7 @@ async def signup_controller(user, db: Session):
             "email": existing.email
         }
     hashpassword = pwd.hash(user.password)
+    role = "admin" if user.email.lower() == ADMIN_EMAIL.lower() else "user"
     new_user = User(
         name=user.name,
         email=user.email,
@@ -33,6 +39,7 @@ async def signup_controller(user, db: Session):
         otp=generated_otp,
         otp_expiry=otp_expiry_time,
         is_active=False,
+        role=role
     )
     db.add(new_user)
     db.commit()
