@@ -5,6 +5,7 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta
 import random
 from utils.jwt_handler import create_access_token
+from utils.send_email import send_otp_email
 
 pwd = CryptContext(schemes=["argon2"], deprecated="auto")
 
@@ -18,9 +19,8 @@ async def signup_controller(user, db: Session):
             raise HTTPException(status_code=400, detail="User already exists")
         existing.otp = generated_otp
         existing.otp_expiry = otp_expiry_time
-        existing.is_active = True
         db.commit()
-        print(f"[OTP RESENT - EMAIL SKIPPED] OTP for {user.email}: {generated_otp}")
+        await send_otp_email(user.email, generated_otp)
         return {
             "message": "OTP resent to email",
             "email": existing.email
@@ -32,12 +32,12 @@ async def signup_controller(user, db: Session):
         password=hashpassword,
         otp=generated_otp,
         otp_expiry=otp_expiry_time,
-        is_active=True,
+        is_active=False,
     )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    print(f"[OTP - EMAIL SKIPPED] OTP for {user.email}: {generated_otp}")
+    await send_otp_email(user.email, generated_otp)
     return {
         "message": "User created! OTP sent to email",
         "id": new_user.id,
@@ -49,9 +49,13 @@ async def verify_otp_controller(user, db: Session):
     dbuser = db.query(User).filter(User.email == user.email).first()
     if not dbuser:
         raise HTTPException(status_code=400, detail="Invalid credentials")
-    # OTP checks skipped — SMTP disabled on Render, users auto-activated at signup
+    if dbuser.otp != user.otp:
+        raise HTTPException(status_code=400, detail="Invalid OTP")
+    if dbuser.otp_expiry < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="OTP has expired. Please signup again to get a new OTP")
     dbuser.is_active = True
     dbuser.otp = None
+    dbuser.otp_expiry = None
     db.commit()
     return {
         "message": "User verified successfully",

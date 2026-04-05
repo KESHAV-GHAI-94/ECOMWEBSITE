@@ -12,9 +12,9 @@ export default function useSignup() {
   const [showPass, setShowPass] = useState(false);
   const [showCPass, setShowCPass] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const navigate = useNavigate();
-  
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -109,7 +109,7 @@ export default function useSignup() {
     if (hasError) return;
     try {
       setLoading(true);
-      
+
       const res = await Api.post("/signup", {
         name: form.name,
         email: form.email,
