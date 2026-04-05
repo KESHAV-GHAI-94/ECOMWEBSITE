@@ -4,16 +4,19 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 SENDER_EMAIL = os.getenv("MAIL_USERNAME", "keshavghai94@gmail.com")
-SENDER_NAME = "SmartShop"
+SENDER_NAME = os.getenv("SENDER_NAME", "SmartShop")
 
 
 async def send_otp_email(email: str, otp: int):
+    api_key = os.getenv("BREVO_API_KEY")
+    if not api_key:
+        raise Exception("BREVO_API_KEY environment variable is not set. Please add it to your Render dashboard.")
+
     url = "https://api.brevo.com/v3/smtp/email"
     headers = {
         "accept": "application/json",
-        "api-key": BREVO_API_KEY,
+        "api-key": api_key,
         "content-type": "application/json",
     }
     payload = {
